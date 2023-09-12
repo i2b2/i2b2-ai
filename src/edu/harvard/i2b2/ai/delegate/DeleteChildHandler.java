@@ -1,0 +1,87 @@
+/*******************************************************************************
+ * Copyright (c) 2006-2018 Massachusetts General Hospital 
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. I2b2 is also distributed under
+ * the terms of the Healthcare Disclaimer.
+ ******************************************************************************/
+/*
+
+ * 
+ * Contributors:
+ * 		Lori Phillips
+ */
+package edu.harvard.i2b2.ai.delegate;
+
+import edu.harvard.i2b2.ai.dao.FolderDao;
+import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
+import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
+import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
+import edu.harvard.i2b2.ai.datavo.wdo.DeleteChildType;
+import edu.harvard.i2b2.ai.ws.DeleteChildDataMessage;
+import edu.harvard.i2b2.ai.ws.MessageFactory;
+import edu.harvard.i2b2.common.exception.I2B2Exception;
+
+public class DeleteChildHandler extends RequestHandler {
+	private DeleteChildDataMessage  deleteChildMsg = null;
+	private DeleteChildType deleteChildType = null;
+	private ProjectType projectInfo = null;
+	
+	public DeleteChildHandler(DeleteChildDataMessage requestMsg) throws I2B2Exception{
+		
+		deleteChildMsg = requestMsg;
+		deleteChildType = requestMsg.deleteChildType();	
+		projectInfo = getRoleInfo(requestMsg.getMessageHeaderType());	
+		setDbInfo(requestMsg.getMessageHeaderType());
+
+	}
+	
+	@Override
+	public String execute() throws I2B2Exception{
+		// call ejb and pass input object
+		FolderDao deleteChildDao = new FolderDao();
+		ResponseMessageType responseMessageType = null;
+		int numDeleted = -1;
+
+		// check to see if we have projectInfo (if not indicates PM service problem)
+		if(projectInfo == null) {
+			String response = null;
+			responseMessageType = MessageFactory.doBuildErrorResponse(deleteChildMsg.getMessageHeaderType(), "User was not validated");
+			response = MessageFactory.convertToXMLString(responseMessageType);
+			log.debug("USER_INVALID or PM_SERVICE_PROBLEM");
+			return response;	
+		}
+		
+		
+		else {	
+			try {
+				numDeleted = deleteChildDao.deleteNode(deleteChildType, projectInfo, this.getDbInfo());
+			} catch (Exception e1) {
+				log.error("DeleteChildHandler received exception");
+				responseMessageType = MessageFactory.doBuildErrorResponse(deleteChildMsg.getMessageHeaderType(), "Database error");
+			}
+		}
+		// no errors found 
+		if(responseMessageType == null) {
+			// no db error but response is empty
+			if (numDeleted == 0) {
+				log.error("delete object not found");
+				responseMessageType = MessageFactory.doBuildErrorResponse(deleteChildMsg.getMessageHeaderType(), "Node not found");
+			}
+			else if (numDeleted == -1) {
+				log.error("database error");
+				responseMessageType = MessageFactory.doBuildErrorResponse(deleteChildMsg.getMessageHeaderType(), "Database error");
+			}
+			else {
+				MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(deleteChildMsg.getMessageHeaderType());          
+//				responseMessageType = MessageFactory.createBuildResponse(messageHeader, null);
+				responseMessageType = MessageFactory.createBuildResponse(messageHeader);
+			}
+		}
+        String responseWdo = null;
+        responseWdo = MessageFactory.convertToXMLString(responseMessageType);
+		return responseWdo;
+	}
+    
+}
