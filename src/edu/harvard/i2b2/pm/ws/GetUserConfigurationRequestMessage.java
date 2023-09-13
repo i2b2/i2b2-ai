@@ -25,7 +25,7 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
 import edu.harvard.i2b2.ai.datavo.pm.GetUserConfigurationType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
 
 public class GetUserConfigurationRequestMessage extends ProjectManagementRequestData {
@@ -88,7 +88,7 @@ public class GetUserConfigurationRequestMessage extends ProjectManagementRequest
 			try {
 				strWriter = new StringWriter();
 				edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory of = new edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory();
-				WorkplaceJAXBUtil.getJAXBUtil().marshaller(of.createRequest(reqMessageType), strWriter);
+				AIJAXBUtil.getJAXBUtil().marshaller(of.createRequest(reqMessageType), strWriter);
 			} catch (JAXBUtilException e) {
 				log.error("Error marshalling Ont request message");
 				throw e;

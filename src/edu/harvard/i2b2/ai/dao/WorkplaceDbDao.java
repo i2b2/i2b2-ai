@@ -30,7 +30,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import edu.harvard.i2b2.ai.datavo.wdo.DblookupType;
 import edu.harvard.i2b2.ai.ejb.DBInfoType;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 
@@ -45,7 +45,7 @@ public class WorkplaceDbDao extends JdbcDaoSupport {
 	public WorkplaceDbDao() throws I2B2Exception{
 		DataSource ds = null;
 		try {
-			ds = WorkplaceUtil.getInstance().getDataSource("java:/WorkplaceBootStrapDS");
+			ds = AIUtil.getInstance().getDataSource("java:/WorkplaceBootStrapDS");
 			//		log.info(ds.toString());
 			Connection conn = ds.getConnection();
 

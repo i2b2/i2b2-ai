@@ -29,7 +29,7 @@ import edu.harvard.i2b2.ai.datavo.pm.ConfigureType;
 import edu.harvard.i2b2.ai.datavo.pm.GetUserConfigurationType;
 import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
 import edu.harvard.i2b2.ai.ejb.DBInfoType;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.pm.ws.PMResponseMessage;
 import edu.harvard.i2b2.pm.ws.PMServiceDriver;
@@ -91,7 +91,7 @@ public abstract class RequestHandler {
 				{
 					if (cell.getId().equals("CRC"))
 					{
-						WorkplaceUtil.getInstance().setCRCEndpointReference(cell.getUrl());
+						AIUtil.getInstance().setCRCEndpointReference(cell.getUrl());
 						break;
 					}
 					

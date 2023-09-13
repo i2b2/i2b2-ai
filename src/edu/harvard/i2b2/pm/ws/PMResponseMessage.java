@@ -25,7 +25,7 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.StatusType;
 import edu.harvard.i2b2.ai.datavo.pm.ConfigureType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
 
@@ -43,7 +43,7 @@ public class PMResponseMessage {
 		
 		JAXBElement jaxbElement;
 		try {
-			jaxbElement = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(response);
+			jaxbElement = AIJAXBUtil.getJAXBUtil().unMashallFromString(response);
 		} catch (JAXBUtilException e) {
 			return status;
 		}

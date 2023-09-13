@@ -29,7 +29,7 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.StatusType;
 import edu.harvard.i2b2.ai.datavo.wdo.FolderType;
 import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 
 import org.junit.FixMethodOrder;
@@ -95,7 +95,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(workplaceTargetEPR + getFoldersByProject).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			JAXBUnWrapHelper helper = new  JAXBUnWrapHelper();
 
@@ -138,7 +138,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(workplaceTargetEPR + getFoldersByUserId).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			JAXBUnWrapHelper helper = new  JAXBUnWrapHelper();
 
@@ -786,7 +786,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(getAllDBlookups).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("DONE", msg);
@@ -803,7 +803,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(getAllDBlookups).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("ERROR", msg);
@@ -820,7 +820,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(setDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("DONE", msg);			
@@ -838,7 +838,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(setDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("ERROR", msg);
@@ -855,7 +855,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(getDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("DONE", msg);
@@ -872,7 +872,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(getDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("DONE", msg);
@@ -889,7 +889,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(getDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("ERROR", msg);
@@ -906,7 +906,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(deleteDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("DONE", msg);
@@ -923,7 +923,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(deleteDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("ERROR", msg);
@@ -940,7 +940,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(deleteDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			StatusType st = r.getResponseHeader().getResultStatus().getStatus();
 			assertEquals("DONE", st.getType());
@@ -958,7 +958,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 			String requestString = getQueryString(filename);
 			OMElement requestElement = convertStringToOMElement(requestString); 
 			OMElement responseElement = getServiceClient(deleteDBlookup).sendReceive(requestElement);
-			JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
 			String msg = r.getResponseHeader().getResultStatus().getStatus().getType();
 			assertEquals("ERROR", msg);
@@ -1009,7 +1009,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 		String requestString = getQueryString(filename);
 		OMElement requestElement = convertStringToOMElement(requestString); 
 		OMElement responseElement = getServiceClient(workplaceTargetEPR + serviceName).sendReceive(requestElement);
-		JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
+		JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
 		ResponseMessageType rspMsgType = (ResponseMessageType)responseJaxb.getValue();
 
 		return rspMsgType;

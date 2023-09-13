@@ -16,10 +16,10 @@
 
 package edu.harvard.i2b2.ai.util;
 
-public class WorkplaceJAXBUtil {
+public class AIJAXBUtil {
 
 	private static edu.harvard.i2b2.common.util.jaxb.JAXBUtil jaxbUtil = null;
-	private WorkplaceJAXBUtil() { 
+	private AIJAXBUtil() { 
 	}
 	
 	

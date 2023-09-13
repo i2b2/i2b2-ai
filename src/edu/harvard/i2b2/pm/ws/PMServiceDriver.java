@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.pm.GetUserConfigurationType;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.axis2.ServiceClient;
 
@@ -55,7 +55,7 @@ public class PMServiceDriver {
 			// First step is to get PM endpoint reference from properties file.
 			String pmEPR = "";
 			try {
-				pmEPR = WorkplaceUtil.getInstance().getPmEndpointReference();
+				pmEPR = AIUtil.getInstance().getPmEndpointReference();
 			} catch (I2B2Exception e1) {
 				log.error(e1.getMessage());
 				throw e1;

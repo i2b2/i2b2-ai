@@ -17,7 +17,7 @@ package edu.harvard.i2b2.ai.ws;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
 
@@ -37,7 +37,7 @@ public abstract class RequestDataMessage{
 	
 	public void setRequestMessageType(String requestWdo) throws I2B2Exception {
 		try {
-			JAXBElement jaxbElement = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(requestWdo);
+			JAXBElement jaxbElement = AIJAXBUtil.getJAXBUtil().unMashallFromString(requestWdo);
 			this.reqMessageType = (RequestMessageType) jaxbElement.getValue();
 			
 		} catch (JAXBUtilException e) {

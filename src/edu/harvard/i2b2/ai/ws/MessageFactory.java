@@ -29,7 +29,7 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.ResultStatusType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.StatusType;
 import edu.harvard.i2b2.ai.datavo.wdo.DblookupsType;
 import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.DTOFactory;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
@@ -223,7 +223,7 @@ public class MessageFactory {
             strWriter = new StringWriter();
 
             edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory objectFactory = new edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory();
-            WorkplaceJAXBUtil.getJAXBUtil().marshaller(objectFactory.createResponse(respMessageType),
+            AIJAXBUtil.getJAXBUtil().marshaller(objectFactory.createResponse(respMessageType),
                 strWriter);
         } catch (JAXBUtilException e) {
         	 log.error(e.getMessage());

@@ -27,23 +27,27 @@ import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
 import edu.harvard.i2b2.ai.datavo.wdo.FolderType;
 import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
 import edu.harvard.i2b2.ai.datavo.wdo.GetQuestionType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.ai.ws.GetAIResultDataMessage;
 import edu.harvard.i2b2.ai.ws.MessageFactory;
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
+import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
 
 
 public class GetAIResultHandler extends RequestHandler {
 	private GetAIResultDataMessage  getResultMsg = null;
 	private GetQuestionType getResultType = null;
-	private ProjectType projectInfo = null;
+	private String projectInfo = null;
+	private SecurityType securityType = null;
 private String text = null;
 	public GetAIResultHandler(GetAIResultDataMessage requestMsg) throws I2B2Exception{
 
 		getResultMsg = requestMsg;
 		getResultType = requestMsg.getAiResultType();
 		
+		securityType = requestMsg.getMessageHeaderType().getSecurity();
+		projectInfo = requestMsg.getMessageHeaderType().getProjectId();
 		if (getResultType == null) 
 		{
 			getResultType = new GetQuestionType();
@@ -90,7 +94,7 @@ private String text = null;
 		
 		String response = null;	
 		try {
-			response = childDao.getAIResult(getResultType, projectInfo, this.getDbInfo());
+			response = childDao.getAIResult(getResultType, securityType, projectInfo, this.getDbInfo());
 		} catch (Exception e1) {
 			log.error(e1.getMessage());
 			responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "Database error");

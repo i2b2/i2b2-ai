@@ -56,7 +56,7 @@ import edu.harvard.i2b2.ai.datavo.wdo.XmlValueType;
 import edu.harvard.i2b2.ai.delegate.crc.CallCRCUtil;
 import edu.harvard.i2b2.ai.ejb.DBInfoType;
 import edu.harvard.i2b2.ai.util.StringUtil;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.db.JDBCUtil;
@@ -82,7 +82,7 @@ public class FolderDao extends JdbcDaoSupport {
 	private void setDataSource(String dataSource) {
 		DataSource ds = null;
 		try {
-			ds = WorkplaceUtil.getInstance().getDataSource(dataSource);
+			ds = AIUtil.getInstance().getDataSource(dataSource);
 			//			metadataSchema = ds.getConnection().getSchema() + ".";
 			Connection conn = ds.getConnection();
 
@@ -390,7 +390,7 @@ public class FolderDao extends JdbcDaoSupport {
 				log.debug("Start to get QM results from CRC");
 				//CallCRCUtil callCRC = new CallCRCUtil(securityType, projectInfo.getId());
 				log.debug("getting Response");
-				queryResult =  CallCRCUtil.callCRCQueryRequestXML(childrenType.getNode(), securityType, projectInfo.getId());
+			//	queryResult =  CallCRCUtil.callCRCQueryRequestXML(childrenType.getNode(), securityType, projectInfo.getId());
 				logesapi.debug(null,"got response: " + queryResult);
 				//if (masterInstanceResultResponseType != null && masterInstanceResultResponseType.getQueryMaster().size() > 0)
 				//	queryResult =XMLUtil.convertDOMElementToString((Element) masterInstanceResultResponseType.getQueryMaster().get(0).getRequestXml().getContent().get(0)); ;  //respoonseType.getQueryResultInstance();
@@ -405,7 +405,7 @@ public class FolderDao extends JdbcDaoSupport {
 				log.debug("Start to get QR results from CRC");
 				//CallCRCUtil callCRC = new CallCRCUtil(securityType, projectInfo.getId());
 				log.debug("getting Response");
-				queryResult =  CallCRCUtil.callCRCResultInstanceXML(childrenType.getNode(), securityType, projectInfo.getId());
+		//		queryResult =  CallCRCUtil.callCRCResultInstanceXML(childrenType.getNode(), securityType, projectInfo.getId());
 				logesapi.debug(null,"got response: " + queryResult);
 				//if (masterInstanceResultResponseType != null)
 				//	queryResult = (String) masterInstanceResultResponseType.getCrcXmlResult().getXmlValue().getContent().get(0);

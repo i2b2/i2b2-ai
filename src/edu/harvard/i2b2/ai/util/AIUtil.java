@@ -34,12 +34,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.pm.ParamType;
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.ServiceLocator;
 import edu.harvard.i2b2.common.util.axis2.ServiceClient;
 import edu.harvard.i2b2.common.util.jaxb.DTOFactory;
+import edu.harvard.i2b2.ai.datavo.i2b2message.ApplicationType;
 
 /**
  * This is the Workplace service's main utility class
@@ -49,7 +51,7 @@ import edu.harvard.i2b2.common.util.jaxb.DTOFactory;
  * $Id: WorkplaceUtil.java,v 1.5 2008/03/13 14:32:32 lcp5 Exp $
  * @author rkuttan
  */
-public class WorkplaceUtil {
+public class AIUtil {
     /** property file name which holds application directory name **/
  //   public static final String APPLICATION_DIRECTORY_PROPERTIES_FILENAME = "workplace_application_directory.properties";
 
@@ -86,7 +88,7 @@ public class WorkplaceUtil {
 //    private static final String PM_BYPASS_ROLE = "workplace.ws.pm.bypass.role";
 
     /** class instance field**/
-    private static WorkplaceUtil thisInstance = null;
+    private static AIUtil thisInstance = null;
 
     /** service locator field**/
     private static ServiceLocator serviceLocator = null;
@@ -106,16 +108,16 @@ public class WorkplaceUtil {
     /**
      * Private constructor to make the class singleton
      */
-    private WorkplaceUtil() {
+    private AIUtil() {
     }
 
     /**
      * Return this class instance
      * @return OntologyUtil
      */
-    public static WorkplaceUtil getInstance() {
+    public static AIUtil getInstance() {
         if (thisInstance == null) {
-            thisInstance = new WorkplaceUtil();
+            thisInstance = new AIUtil();
         }
 
         serviceLocator = ServiceLocator.getInstance();
@@ -325,7 +327,20 @@ public class WorkplaceUtil {
         return propertyValue;
         */
     }
-}
+
+    public static MessageHeaderType getMessageHeader()  {
+		MessageHeaderType messageHeader = new MessageHeaderType();
+		ApplicationType appType = new ApplicationType();
+		try {
+			appType.setApplicationName("AI"); //getPropertyValue("applicationName"));
+			appType.setApplicationVersion("1.8"); //getPropertyValue("applicationVersion"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		messageHeader.setSendingApplication(appType);
+		return messageHeader;
+	}}
 
 
 class getHiveCellParam implements RowMapper<ParamType> {

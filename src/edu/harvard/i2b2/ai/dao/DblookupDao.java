@@ -18,7 +18,7 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.wdo.DblookupType;
 import edu.harvard.i2b2.ai.datavo.wdo.DeleteDblookupType;
 import edu.harvard.i2b2.ai.datavo.wdo.SetDblookupType;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
@@ -59,7 +59,7 @@ public class DblookupDao extends JdbcDaoSupport {
 	
 	private void initDblookupDao() {		
 		try {
-			ds = WorkplaceUtil.getInstance().getDataSource("java:/WorkplaceBootStrapDS");
+			ds = AIUtil.getInstance().getDataSource("java:/WorkplaceBootStrapDS");
 		} catch (I2B2Exception e2) {
 			log.error(e2.getMessage());;
 		} 

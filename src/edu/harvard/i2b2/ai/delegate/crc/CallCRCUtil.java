@@ -24,7 +24,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
-import org.apache.axis2.client.ServiceClient;
+import edu.harvard.i2b2.common.util.axis2.ServiceClient;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -50,22 +50,33 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResultStatusType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
-import edu.harvard.i2b2.ai.util.WorkplaceJAXBUtil;
-import edu.harvard.i2b2.ai.util.WorkplaceUtil;
+import edu.harvard.i2b2.ai.util.AIJAXBUtil;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.MasterInstanceResultResponseType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ItemType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PanelType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionRequestType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ResultOutputOptionListType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ResultOutputOptionType;
 
 public class CallCRCUtil {
 
 	//	private SecurityType securityType = null;
 	//	private String projectId = null;
 	//private String crcUrl = null;
-	static WorkplaceUtil workplaceUtil = WorkplaceUtil.getInstance();
+	static AIUtil workplaceUtil = AIUtil.getInstance();
 	static ServiceClient serviceClient = null;
 	private static Log log = LogFactory.getLog(CallCRCUtil.class);
 	protected static Logger logesapi = ESAPI.getLogger(CallCRCUtil.class);
 
+	
+	private static String crcUrl = "http://127.0.0.1:9090/i2b2/services/QueryToolService";
+
+	
 	/*
 	public CallCRCUtil(SecurityType securityType, String projectId)
 			throws I2B2Exception {
@@ -83,6 +94,73 @@ public class CallCRCUtil {
 	}
 	 */
 
+	public static MasterInstanceResultResponseType callSetfinderQuery(QueryDefinitionType queryDef,  SecurityType securityType,  String projectId) throws I2B2Exception {
+		RequestMessageType requestMessageType = buildSetfinderQueryRequestMessage(queryDef, securityType, projectId);
+		MasterInstanceResultResponseType masterInstanceResultResponseType = null;
+		try {
+			OMElement requestElement = buildOMElement(requestMessageType);
+			logesapi.debug(null,"CRC Ontology call's request xml "
+					+ requestElement);
+			String response = ServiceClient.sendREST(crcUrl + "/request", requestElement);
+			logesapi.debug(null,"CRC Ontology call's reponse xml " + response);
+			//masterInstanceResultResponseType = getMasterInstanceResultResponseMessage(response);
+		} catch (JAXBUtilException jaxbEx) {
+			throw new I2B2Exception("Error in CRC setfinder ", jaxbEx);
+		} catch (XMLStreamException e) {
+			throw new I2B2Exception("Error in CRC setfinder ", e);
+
+		} catch (Exception e) {
+
+			throw new I2B2Exception("Error in CRC setfinder ", e);
+		}	
+		return masterInstanceResultResponseType;
+	}
+	
+	
+	
+	public static RequestMessageType buildSetfinderQueryRequestMessage(QueryDefinitionType queryDef,  SecurityType securityType,  String projectId) {
+		QueryDefinitionRequestType queryDefinitionRequestType = new QueryDefinitionRequestType();
+		ResultOutputOptionListType resultOutputOptionListType = new ResultOutputOptionListType();
+		ResultOutputOptionType resultOutputOptionType = new ResultOutputOptionType();
+		resultOutputOptionType.setName("PATIENT_COUNT_XML");
+		resultOutputOptionListType.getResultOutput().add(resultOutputOptionType);
+		queryDefinitionRequestType.setQueryDefinition(queryDef);
+		queryDefinitionRequestType.setResultOutputList(resultOutputOptionListType);
+
+		MessageHeaderType messageHeaderType =   AIUtil.getMessageHeader();
+		messageHeaderType.setSecurity(securityType);
+		messageHeaderType.setProjectId(projectId);
+
+		messageHeaderType.setReceivingApplication(messageHeaderType
+				.getSendingApplication());
+		FacilityType facilityType = new FacilityType();
+		facilityType.setFacilityName("sample");
+		messageHeaderType.setSendingFacility(facilityType);
+		messageHeaderType.setReceivingFacility(facilityType);
+
+		RequestMessageType requestMessageType = new RequestMessageType();
+		edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ObjectFactory of = new edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ObjectFactory();
+		BodyType bodyType = new BodyType();
+		PsmQryHeaderType psm = new PsmQryHeaderType();
+		psm.setRequestType(PsmRequestTypeType.CRC_QRY_RUN_QUERY_INSTANCE_FROM_QUERY_DEFINITION);
+		bodyType.getAny().add(of.createPsmheader(psm));
+		bodyType.getAny().add(of.createRequest(queryDefinitionRequestType));
+		requestMessageType.setMessageBody(bodyType);
+
+		requestMessageType.setMessageHeader(messageHeaderType);
+
+		RequestHeaderType requestHeader = new RequestHeaderType();
+		requestHeader.setResultWaittimeMs(180000); //3000);
+		requestMessageType.setRequestHeader(requestHeader);
+		return requestMessageType;
+	}
+	
+	
+	
+	
+	
+	/*
+	
 	public static String callCRCResultInstanceXML(String resultInstanceID, SecurityType securityType,  String projectId)
 			throws I2B2Exception {
 		//		ResultResponseType resultResponseType = null;
@@ -122,7 +200,7 @@ public class CallCRCUtil {
 
 		return response;
 	}
-
+=	
 	public static String callCRCQueryRequestXML(String queryMasterId, SecurityType securityType,  String projectId)
 			throws I2B2Exception {
 		//		ResultResponseType resultResponseType = null;
@@ -164,7 +242,7 @@ public class CallCRCUtil {
 		return response;
 	}
 
-
+*/
 	//	public RequestMessageType buildSetfinderStatusRequestMessage(String queryInstanceId) {
 	public static RequestMessageType buildResultInstanceRequestXMLRequestMessage(String resultInstanceId, SecurityType securityType,  String projectId) {
 		ResultRequestType masterRequestType = new ResultRequestType();
@@ -246,7 +324,7 @@ public class CallCRCUtil {
 
 	private static CrcXmlResultResponseType getResponseMessage(
 			String responseXml) throws JAXBUtilException, I2B2Exception {
-		JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil()
+		JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil()
 				.unMashallFromString(responseXml);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
 		log.debug("CRC's workplace call response xml" + responseXml);
@@ -265,7 +343,7 @@ public class CallCRCUtil {
 
 	private static MasterResponseType getMasterInstanceResultResponseMessage(
 			String responseXml) throws JAXBUtilException, I2B2Exception {
-		JAXBElement responseJaxb = WorkplaceJAXBUtil.getJAXBUtil()
+		JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil()
 				.unMashallFromString(responseXml);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
 		log.debug("CRC's workplace call response xml" + responseXml);
@@ -288,7 +366,7 @@ public class CallCRCUtil {
 			throws XMLStreamException, JAXBUtilException {
 		StringWriter strWriter = new StringWriter();
 		edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory hiveof = new edu.harvard.i2b2.ai.datavo.i2b2message.ObjectFactory();
-		WorkplaceJAXBUtil.getJAXBUtil().marshaller(
+		AIJAXBUtil.getJAXBUtil().marshaller(
 				hiveof.createRequest(requestMessageType), strWriter);
 		// getOMElement from message
 		OMFactory fac = OMAbstractFactory.getOMFactory();
@@ -301,6 +379,7 @@ public class CallCRCUtil {
 		return request;
 	}
 
+	/*
 	private static OMElement getServiceClient(String operationName, OMElement request) throws AxisFault, I2B2Exception {
 		// call
 		OMElement response = null;
@@ -335,5 +414,5 @@ public class CallCRCUtil {
 		return response;
 
 	}
-
+*/
 }
