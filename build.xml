@@ -49,6 +49,8 @@
 					        <arg value="../${i2b2xmlproject}/xsd/cell/ai_1.1/AI_RESP.xsd"/>
 				        <arg value="../${i2b2xmlproject}/xsd/cell/pm_1.1/PM_USER.xsd"/>
 	        <arg value="../${i2b2xmlproject}/xsd/hive/msg_1.1/i2b2_response.xsd"/>
+	        <arg value="../${i2b2xmlproject}/xsd/cell/ont_1.1/ONT_RESP.xsd"/>
+	        <arg value="../${i2b2xmlproject}/xsd/cell/ont_1.1/ONT_QRY.xsd"/>
 	        <arg value="../${i2b2xmlproject}/xsd/cell/crc/psm_1.1/CRC_PSM_QRY.xsd"/>
             <arg value="../${i2b2xmlproject}/xsd/cell/crc/psm_1.1/CRC_PSM_QRY_analysis_definition.xsd"/>
 	        <arg value="../${i2b2xmlproject}/xsd/cell/crc/psm_1.1/CRC_PSM_QRY_query_definition.xsd"/>
@@ -60,6 +62,8 @@
 				        <arg value="./etc/xsd_1.1/i2b2_pm_bindings.xjb"/>
 	        <arg value="-b"/>
 	        <arg value="./etc/xsd_1.1/i2b2_crc_psm_bindings.xjb"/>
+	        <arg value="-b"/>
+	        <arg value="./etc/xsd_1.1/i2b2_ontology_bindings.xjb"/>
 	        <arg value="-b"/>
 	        <arg value="./etc/xsd_1.1/i2b2_psm_analysisdefinition_bindings.xjb"/>
 		        <arg value="-b"/>

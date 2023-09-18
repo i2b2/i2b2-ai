@@ -15,7 +15,9 @@
 package edu.harvard.i2b2.ai.dao;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ItemType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.MasterInstanceResultResponseType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PanelType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionRequestType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.BodyType;
@@ -26,6 +28,7 @@ import edu.harvard.i2b2.ai.datavo.wdo.DeleteDblookupType;
 import edu.harvard.i2b2.ai.datavo.wdo.GetQuestionType;
 import edu.harvard.i2b2.ai.datavo.wdo.SetDblookupType;
 import edu.harvard.i2b2.ai.delegate.crc.CallCRCUtil;
+import edu.harvard.i2b2.ai.delegate.ontology.CallOntologyUtil;
 import edu.harvard.i2b2.ai.ejb.DBInfoType;
 import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.ai.util.AIUtil;
@@ -34,6 +37,7 @@ import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
 import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
+import edu.harvard.i2b2.ai.datavo.ontology.ConceptsType;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -202,7 +206,8 @@ public class AIDao extends JdbcDaoSupport {
 					"\"instruction_template\": \"i2b2\"," +
 					"\"mode\": \"instruct\"," +
 					"\"max_new_tokens\": \"2048\"," +
-					"\"preset\": \"Divine Intellect\" }";
+					"\"preset\": \"My Preset\" }";
+//					"\"preset\": \"Divine Intellect\" }";
 			HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
 			// HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
 			httpPost.setEntity(stringEntity );
@@ -294,11 +299,59 @@ public class AIDao extends JdbcDaoSupport {
 				+ "    </panel>\r\n"
 				+ "</ns4:query_definition>\r\n";
 		*/
-		QueryDefinitionType query = null;
+		QueryDefinitionType queryFromAI = null;
+		QueryDefinitionType query = new QueryDefinitionType();
 		try {
-			query =  getQueryDefinitionType(str);
+			queryFromAI =  getQueryDefinitionType(str);
+			
+			query.setQueryName(queryFromAI.getQueryName());
+			query.setSpecificityScale(0);
+			query.setQueryTiming("ANY");
+			
+			List<PanelType> panelList = queryFromAI.getPanel();
+
+			//for (PanelType panel: panelList)
+			for (int i=0; i < panelList.size(); i++)
+			{
+				PanelType panel = panelList.get(i);
+				
+				PanelType newPanel = new PanelType();
+				newPanel.setPanelNumber(i+1);
+				newPanel.setPanelTiming("ANY");
+				newPanel.setPanelAccuracyScale(100);
+				newPanel.setInvert(0);
+				newPanel.setTotalItemOccurrences(panel.getTotalItemOccurrences());
+				
+				List<ItemType> itemList = panel.getItem();
+				for (ItemType item: itemList)
+				{
+					ItemType newItem = new ItemType();
+					
+					ConceptsType concepts = CallOntologyUtil.callOntology(item.getItemName(), "contains",  securityType, item.getItemKey().substring(2,item.getItemKey().indexOf('\\', 4)), projectInfo, "http://127.0.0.1:9090/i2b2/services/OntologyService/getNameInfo");
+					
+					if (concepts != null && concepts.getConcept() != null)
+					{
+						//newItem.setDimDimcode( concepts.getConcept().get(0).getDimcode());
+						newItem.setHlevel( concepts.getConcept().get(0).getLevel());
+						newItem.setItemName( concepts.getConcept().get(0).getName());
+						newItem.setItemKey( concepts.getConcept().get(0).getKey());
+						newItem.setItemIcon( concepts.getConcept().get(0).getVisualattributes());
+						newItem.setTooltip( concepts.getConcept().get(0).getTooltip());
+						newItem.setClazz( "ENC");
+						newItem.setItemIsSynonym( false);
+						log.info("Concept: " + concepts.getConcept().get(0).getName());
+					}
+					newPanel.getItem().add(newItem);
+				}
+				query.getPanel().add(newPanel);
+			}
+			
 			
 			MasterInstanceResultResponseType response = CallCRCUtil.callSetfinderQuery(query,securityType, projectInfo);
+			if (response != null)
+				str = response.getQueryMaster().getQueryMasterId();
+			else
+				str = "-1";
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -326,7 +326,7 @@ public class MessageFactory {
 	 */
 	public static ResponseMessageType createNonStandardResponse(MessageHeaderType messageHeaderType, String msg) {
 		ResponseMessageType respMessageType = null;
-		ResponseHeaderType respHeader = createResponseHeader("DONE", msg + " - Workplace processing completed");
+		ResponseHeaderType respHeader = createResponseHeader("DONE", msg );
 		respMessageType = createResponseMessageType(messageHeaderType, respHeader, null);
 		return respMessageType;
 	}

@@ -41,6 +41,7 @@ import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.MasterResponseType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PsmQryHeaderType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PsmRequestTypeType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ResultRequestType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.UserType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ApplicationType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.BodyType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.FacilityType;
@@ -60,6 +61,7 @@ import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ItemType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PanelType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionRequestType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryModeType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ResultOutputOptionListType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ResultOutputOptionType;
 
@@ -99,11 +101,11 @@ public class CallCRCUtil {
 		MasterInstanceResultResponseType masterInstanceResultResponseType = null;
 		try {
 			OMElement requestElement = buildOMElement(requestMessageType);
-			logesapi.debug(null,"CRC Ontology call's request xml "
+			log.info("AI CRC call's request xml "
 					+ requestElement);
 			String response = ServiceClient.sendREST(crcUrl + "/request", requestElement);
-			logesapi.debug(null,"CRC Ontology call's reponse xml " + response);
-			//masterInstanceResultResponseType = getMasterInstanceResultResponseMessage(response);
+			logesapi.debug(null,"AI CRC call's reponse xml " + response);
+			masterInstanceResultResponseType = getMasterInstanceResultResponseMessage(response);
 		} catch (JAXBUtilException jaxbEx) {
 			throw new I2B2Exception("Error in CRC setfinder ", jaxbEx);
 		} catch (XMLStreamException e) {
@@ -122,7 +124,9 @@ public class CallCRCUtil {
 		QueryDefinitionRequestType queryDefinitionRequestType = new QueryDefinitionRequestType();
 		ResultOutputOptionListType resultOutputOptionListType = new ResultOutputOptionListType();
 		ResultOutputOptionType resultOutputOptionType = new ResultOutputOptionType();
-		resultOutputOptionType.setName("PATIENT_COUNT_XML");
+		resultOutputOptionType.setName("patient_count_xml");
+		resultOutputOptionType.setFullName("PATIENT_COUNT_XML");
+		resultOutputOptionType.setPriorityIndex(9);
 		resultOutputOptionListType.getResultOutput().add(resultOutputOptionType);
 		queryDefinitionRequestType.setQueryDefinition(queryDef);
 		queryDefinitionRequestType.setResultOutputList(resultOutputOptionListType);
@@ -143,6 +147,12 @@ public class CallCRCUtil {
 		BodyType bodyType = new BodyType();
 		PsmQryHeaderType psm = new PsmQryHeaderType();
 		psm.setRequestType(PsmRequestTypeType.CRC_QRY_RUN_QUERY_INSTANCE_FROM_QUERY_DEFINITION);
+		psm.setQueryMode(QueryModeType.OPTIMIZE_WITHOUT_TEMP_TABLE);
+		UserType userType = new UserType();
+		userType.setGroup(projectId);
+		userType.setLogin(securityType.getUsername());
+		userType.setValue(securityType.getUsername());
+		psm.setUser(userType);
 		bodyType.getAny().add(of.createPsmheader(psm));
 		bodyType.getAny().add(of.createRequest(queryDefinitionRequestType));
 		requestMessageType.setMessageBody(bodyType);
@@ -341,7 +351,7 @@ public class CallCRCUtil {
 		return masterInstanceResultResponseType;
 	}
 
-	private static MasterResponseType getMasterInstanceResultResponseMessage(
+	private static MasterInstanceResultResponseType getMasterInstanceResultResponseMessage(
 			String responseXml) throws JAXBUtilException, I2B2Exception {
 		JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil()
 				.unMashallFromString(responseXml);
@@ -353,9 +363,9 @@ public class CallCRCUtil {
 		if (rt.getStatus().getType().equals("ERROR")) {
 			throw new I2B2Exception(rt.getStatus().getValue());
 		}
-		MasterResponseType masterInstanceResultResponseType = (MasterResponseType) helper
+		MasterInstanceResultResponseType masterInstanceResultResponseType = (MasterInstanceResultResponseType) helper
 				.getObjectByClass(r.getMessageBody().getAny(),
-						MasterResponseType.class);
+						MasterInstanceResultResponseType.class);
 		log.debug("got MasterInstanceResultResponseType");
 		return masterInstanceResultResponseType;
 	}
