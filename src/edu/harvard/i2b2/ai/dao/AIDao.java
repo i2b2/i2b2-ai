@@ -201,7 +201,7 @@ public class AIDao extends JdbcDaoSupport {
 //		    \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n\nI want to find all patients with Diabetes over age of 65.\n\n### Response:\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<ns4:query_definition xmlns:ns2=\"http://www.i2b2.org/xsd/cell/crc/psm/1.1//\" xmlns:ns4=\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1//\" xmlns:ns3=\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1//\">",
 
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpPost httpPost = new HttpPost("http://172.18.180.94:5000/api/v1/generate");
+			HttpPost httpPost = new HttpPost("http://127.0.0.1:5000/api/v1/generate");
 			String JSON_STRING="{ \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\\n\\n### Instruction:\\n\\n"+ getResultType.getQuestion() + "\\n\\n### Response:\\n```xml\\n<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\n<ns4:query_definition xmlns:ns2=\\\"http://www.i2b2.org/xsd/cell/crc/psm/1.1/\\\" xmlns:ns4=\\\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1/\\\" xmlns:ns3=\\\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1/\\\">\"," +
 					"\"instruction_template\": \"i2b2\"," +
 					"\"mode\": \"instruct\"," +
