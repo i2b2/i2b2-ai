@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -29,13 +29,8 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMXMLBuilderFactory;
 
 import edu.harvard.i2b2.common.util.axis2.ServiceClient;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Logger;
 
 import edu.harvard.i2b2.common.exception.I2B2DAOException;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
@@ -73,7 +68,7 @@ public class CallOntologyUtil {
 	//	private String ontologyUrl = null;
 
 	private static Log log = LogFactory.getLog(CallOntologyUtil.class);
-	protected static Logger logesapi = ESAPI.getLogger(CallOntologyUtil.class);
+	protected static Log logesapi = LogFactory.getLog(CallOntologyUtil.class);
 
 	private static JAXBUtil jaxbUtil =   AIJAXBUtil.getJAXBUtil();
 
@@ -180,7 +175,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb =// CRCJAXBUtil.getJAXBUtil()
 				jaxbUtil.unMashallFromString(response);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getConceptFromResponse: " + response);
+		logesapi.debug("CRC's ontology call response xml from getConceptFromResponse: " + response);
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
 				throw new I2B2DAOException("Error when getting metadata from ontology [" + r.getResponseHeader().getResultStatus().getStatus().getValue() +"]");
@@ -253,7 +248,7 @@ public class CallOntologyUtil {
 		DerivedFactColumnsType factColumns = null;
 		try {
 			String response = ServiceClient.sendREST(ontologyUrl, requestElement);
-			logesapi.debug(null,"TEST callGetFactColumns:" + response );
+			logesapi.debug("TEST callGetFactColumns:" + response );
 			factColumns = getFactColumnsFromResponse(response);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -269,7 +264,7 @@ public class CallOntologyUtil {
 		DerivedFactColumnsType factColumns = null;
 		try {
 			String response = ServiceClient.sendREST(ontologyUrl, requestElement);
-			logesapi.debug(null,"TEST callGetFactColumnsByConceptCd: " + ontologyUrl +" "+ response );
+			logesapi.debug("TEST callGetFactColumnsByConceptCd: " + ontologyUrl +" "+ response );
 			factColumns = getFactColumnsFromResponse2(response);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -285,8 +280,8 @@ public class CallOntologyUtil {
 		RequestMessageType requestMessageType = getChildrenI2B2RequestMessage(itemKey, securityType, projectId.replaceAll("/", ""));
 		OMElement requestElement = buildOMElement(requestMessageType);
 		ConceptsType conceptsType = null;
-		logesapi.debug(null,"CRC Ontology call's request xml from callGetChildren: " + requestElement);
-		logesapi.debug(null,"URL: " + ontologyUrl);
+		logesapi.debug("CRC Ontology call's request xml from callGetChildren: " + requestElement);
+		logesapi.debug("URL: " + ontologyUrl);
 		try {
 			String response = ServiceClient.sendREST(ontologyUrl, requestElement);
 			conceptsType = getChildrenFromResponse(response);
@@ -347,7 +342,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb =   
 				jaxbUtil.unMashallFromString(responseXml); //CRCJAXBUtil.getJAXBUtil()
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from ModiferType: " + responseXml);
+		logesapi.debug("CRC's ontology call response xml from ModiferType: " + responseXml);
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
 				throw new I2B2DAOException("Error when getting modifier from ontology [" + r.getResponseHeader().getResultStatus().getStatus().getValue() +"]");
@@ -371,7 +366,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb = 
 				jaxbUtil.unMashallFromString(responseXml); //CRCJAXBUtil.getJAXBUtil()
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getChildrenFromResponse: " + responseXml);
+		logesapi.debug("CRC's ontology call response xml from getChildrenFromResponse: " + responseXml);
 
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
@@ -391,7 +386,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb = 
 				jaxbUtil.unMashallFromString(responseXml); //CRCJAXBUtil.getJAXBUtil()
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getLoadDataFromResponse: " + responseXml);
+		logesapi.debug("CRC's ontology call response xml from getLoadDataFromResponse: " + responseXml);
 
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
@@ -410,7 +405,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb = 
 				jaxbUtil.unMashallFromString(responseXml); //CRCJAXBUtil.getJAXBUtil()
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getDeleteChildFromResponse: " + responseXml);
+		logesapi.debug("CRC's ontology call response xml from getDeleteChildFromResponse: " + responseXml);
 
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
@@ -430,7 +425,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb =// CRCJAXBUtil.getJAXBUtil()
 				jaxbUtil.unMashallFromString(response);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getFactColumnsFromResponse: " + response);
+		logesapi.debug("CRC's ontology call response xml from getFactColumnsFromResponse: " + response);
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
 				throw new I2B2DAOException("Error when getting factColumns/concepts by code from ontology [" + r.getResponseHeader().getResultStatus().getStatus().getValue() +"]");
@@ -456,7 +451,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb =// CRCJAXBUtil.getJAXBUtil()
 				jaxbUtil.unMashallFromString(response);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.info(null,"CRC's ontology call response xml from getFactColumnsFromResponse2: " + response);
+		logesapi.info("CRC's ontology call response xml from getFactColumnsFromResponse2: " + response);
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
 				throw new I2B2DAOException("Error when getting factColumns/concepts by code from ontology [" + r.getResponseHeader().getResultStatus().getStatus().getValue() +"]");
@@ -517,7 +512,7 @@ public class CallOntologyUtil {
 		JAXBElement responseJaxb =// CRCJAXBUtil.getJAXBUtil()
 				jaxbUtil.unMashallFromString(response);
 		ResponseMessageType r = (ResponseMessageType) responseJaxb.getValue();
-		logesapi.debug(null,"CRC's ontology call response xml from getConceptFromResponse: " + response);
+		logesapi.debug("CRC's ontology call response xml from getConceptFromResponse: " + response);
 		if (r.getResponseHeader() != null && r.getResponseHeader().getResultStatus() !=null) { 
 			if (r.getResponseHeader().getResultStatus().getStatus().getType().equalsIgnoreCase("ERROR")) {
 				throw new I2B2DAOException("Error when getting metadata from ontology [" + r.getResponseHeader().getResultStatus().getStatus().getValue() +"]");

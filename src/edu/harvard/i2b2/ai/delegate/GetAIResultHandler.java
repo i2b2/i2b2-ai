@@ -17,7 +17,7 @@ package edu.harvard.i2b2.ai.delegate;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import edu.harvard.i2b2.ai.dao.AIDao;
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;

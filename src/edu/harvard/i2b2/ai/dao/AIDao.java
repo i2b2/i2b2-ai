@@ -50,10 +50,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+/*
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -66,7 +67,18 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+*/
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.ContentType;
+//import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -208,7 +220,12 @@ public class AIDao extends JdbcDaoSupport {
 					"\"max_new_tokens\": \"2048\"," +
 					"\"preset\": \"My Preset\" }";
 //					"\"preset\": \"Divine Intellect\" }";
-			HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
+			//HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
+
+			
+		    HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
+
+
 			// HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
 			httpPost.setEntity(stringEntity );
 			CloseableHttpResponse response = httpclient.execute(httpPost);

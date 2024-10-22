@@ -11,7 +11,7 @@ package edu.harvard.i2b2.ai.delegate.crc;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -26,14 +26,14 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import edu.harvard.i2b2.common.util.axis2.ServiceClient;
 import org.apache.axis2.context.ServiceContext;
+/*
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+*/
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.Logger;
 
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.CrcXmlResultResponseType;
 import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.MasterRequestType;
@@ -73,7 +73,7 @@ public class CallCRCUtil {
 	static AIUtil workplaceUtil = AIUtil.getInstance();
 	static ServiceClient serviceClient = null;
 	private static Log log = LogFactory.getLog(CallCRCUtil.class);
-	protected static Logger logesapi = ESAPI.getLogger(CallCRCUtil.class);
+	protected static Log logesapi = LogFactory.getLog(CallCRCUtil.class);
 
 	
 	private static String crcUrl = "http://127.0.0.1:9090/i2b2/services/QueryToolService";
@@ -104,7 +104,7 @@ public class CallCRCUtil {
 			log.info("AI CRC call's request xml "
 					+ requestElement);
 			String response = ServiceClient.sendREST(crcUrl + "/request", requestElement);
-			logesapi.debug(null,"AI CRC call's reponse xml " + response);
+			logesapi.debug("AI CRC call's reponse xml " + response);
 			masterInstanceResultResponseType = getMasterInstanceResultResponseMessage(response);
 		} catch (JAXBUtilException jaxbEx) {
 			throw new I2B2Exception("Error in CRC setfinder ", jaxbEx);
@@ -179,10 +179,10 @@ public class CallCRCUtil {
 			log.debug("begin build element");
 			RequestMessageType requestMessageType = buildResultInstanceRequestXMLRequestMessage(resultInstanceID, securityType, projectId);
 			OMElement requestElement = buildOMElement(requestMessageType);
-			logesapi.debug(null,"callCRCQueryRequestXML - CRC setfinder query request XML call's request xml "
+			logesapi.debug("callCRCQueryRequestXML - CRC setfinder query request XML call's request xml "
 					+ requestElement);
 			response = getServiceClient("/request", requestElement).toString();
-			logesapi.debug(null,"callCRCQueryRequestXML - CRC setfinder query request XML call's response xml " + response.toString());
+			logesapi.debug("callCRCQueryRequestXML - CRC setfinder query request XML call's response xml " + response.toString());
 			//resultResponseType = getResultResponseMessage(response.toString());
 			//masterInstanceResultResponseType = getResponseMessage(response
 			//		.toString());
