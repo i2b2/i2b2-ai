@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -27,8 +27,6 @@ import org.junit.Test;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.StatusType;
-import edu.harvard.i2b2.ai.datavo.wdo.FolderType;
-import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
 import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 
@@ -87,83 +85,7 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 
 	}
 
-	@Test
-	public void A10_GetFoldersByProject() throws Exception {
-		String filename = testFileDir + "/folders_by_project.xml";
-		String masterInstanceResult = null;
-		try { 
-			String requestString = getQueryString(filename);
-			OMElement requestElement = convertStringToOMElement(requestString); 
-			OMElement responseElement = getServiceClient(workplaceTargetEPR + getFoldersByProject).sendReceive(requestElement);
-			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
-			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
-			JAXBUnWrapHelper helper = new  JAXBUnWrapHelper();
 
-			FoldersType folders = (FoldersType)helper.getObjectByClass(r.getMessageBody().getAny(),FoldersType.class);
-			for(FolderType folder: folders.getFolder())
-			{
-				if (folder.getName().equals("demo"))
-				{
-					assertEquals(folder.getName(),"demo");
-					demoIndex = (folder.getIndex()).replaceAll("\\\\", "\\\\\\\\");
-				}
-				if (folder.getName().equals("i2b2"))
-				{
-					assertEquals(folder.getName(),"i2b2");
-					i2b2Index = (folder.getIndex()).replaceAll("\\\\", "\\\\\\\\");
-				}
-
-				if (folder.getName().equals("SHARED"))
-				{
-					assertEquals(folder.getName(),"SHARED");
-					sharedIndex = (folder.getIndex()).replaceAll("\\\\", "\\\\\\\\");
-				}
-			}
-			assertNotNull(folders);
-			assertTrue(folders.getFolder().size() > 1);
-
-
-
-		} catch (Exception e) { 
-			e.printStackTrace();
-			assertTrue(false);
-		}
-	}
-
-	@Test
-	public void A20_GetFoldersByUserId() throws Exception {
-		String filename = testFileDir + "/folders_by_userid.xml";
-		String masterInstanceResult = null;
-		try { 
-			String requestString = getQueryString(filename);
-			OMElement requestElement = convertStringToOMElement(requestString); 
-			OMElement responseElement = getServiceClient(workplaceTargetEPR + getFoldersByUserId).sendReceive(requestElement);
-			JAXBElement responseJaxb = AIJAXBUtil.getJAXBUtil().unMashallFromString(responseElement.toString());
-			ResponseMessageType r = (ResponseMessageType)responseJaxb.getValue();
-			JAXBUnWrapHelper helper = new  JAXBUnWrapHelper();
-
-			FoldersType folders = (FoldersType)helper.getObjectByClass(r.getMessageBody().getAny(),FoldersType.class);
-			for(FolderType folder: folders.getFolder())
-			{
-				if (folder.getName().equals("demo"))
-				{
-					assertEquals(folder.getName(),"demo");
-				}
-				if (folder.getName().equals("SHARED"))
-				{
-					assertEquals(folder.getName(),"SHARED");
-				}
-			}
-			assertNotNull(folders);
-			assertTrue(folders.getFolder().size() > 1);
-
-
-
-		} catch (Exception e) { 
-			e.printStackTrace();
-			assertTrue(false);
-		}
-	}
 
 	@Test
 	public void A30_AddChildOntologyFolder() throws Exception {
@@ -1028,67 +950,6 @@ public class WorkplaceServiceRESTTest extends WorkplaceAxisAbstract{
 		assertEquals("Checking for: " + statusType  ,statusStr.toUpperCase(), statusType.toUpperCase());
 	}
 
-	/**
-	 * This methods verifies if the folder was returned in response
-	 * Also it checks that number of folders returned in response are more than 0
-	 * 
-	 * @param respMsgType - ResponseMessageType
-	 * @param conceptName - foldername to be searched within response
-	 * @param protectedAccess - Its Boolean object type so that we can pass null if not using it
-	 * @return
-	 * @throws Exception
-	 */
-	private boolean verifyFolder(ResponseMessageType respMsgType, String conceptName, boolean includesBlob, boolean typeAll, Boolean protectedAccess) throws Exception {
-
-		JAXBUnWrapHelper helper = new  JAXBUnWrapHelper();
-		FoldersType folders = (FoldersType)helper.getObjectByClass(respMsgType.getMessageBody().getAny(),FoldersType.class);
-
-		// verify folders obj is not null
-		assertNotNull(folders);
-
-		boolean foundConcept= false;
-		for(FolderType folder: folders.getFolder())
-		{
-			// verify all the elements only if search file has been found
-			if (folder.getName().toLowerCase().equals(conceptName.toLowerCase())){
-				assertTrue(folder.getName()!=null);
-				assertTrue(folder.getGroupId()!=null);
-				assertTrue(folder.getIndex()!=null);
-				assertTrue(folder.getParentIndex()!=null);
-				assertTrue(folder.getShareId()!=null);
-				assertTrue(folder.getUserId()!=null);
-				assertTrue(folder.getVisualAttributes()!=null);
-				assertTrue(folder.getWorkXmlI2B2Type()!=null);
-
-		//		if(includesBlob)
-		//			assertTrue(folder.getWorkXml()!=null);		
-
-				if(typeAll)
-					assertTrue(folder.getEntryDate()!=null);
-
-				if(protectedAccess != null){
-					String protectedAccessVal = "N";
-					if(protectedAccess.booleanValue()== true)
-						protectedAccessVal = "Y";
-					else
-						protectedAccessVal = "N";
-
-					assertTrue(folder.getProtectedAccess().equalsIgnoreCase(protectedAccessVal));
-				}
-
-				foundConcept = true;
-
-				if (conceptName.equals("11 years old demo"))
-					findDemographicsIndex = folder.getIndex().replaceAll("\\\\", "\\\\\\\\");
-				break;
-			}
-		}
-
-		// verify number of resulting folders are more than/equal to 1 
-		assertTrue(folders.getFolder().size() >= 1);		
-
-		return foundConcept;
-	}
 
 
 

@@ -14,6 +14,7 @@
 package edu.harvard.i2b2.ai.ws;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.BodyType;
+import edu.harvard.i2b2.ai.datavo.ontology.VocabRequestType;
 import edu.harvard.i2b2.ai.datavo.wdo.FindByChildType;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
@@ -37,6 +38,14 @@ public class GetNameInfoDataMessage extends RequestDataMessage{
 		FindByChildType findByRequestType = (FindByChildType) helper.getObjectByClass(bodyType.getAny(),
 				FindByChildType.class);        
 		return findByRequestType;
+	}
+
+	public VocabRequestType getVocabRequestType() throws JAXBUtilException {
+		BodyType bodyType = reqMessageType.getMessageBody();
+		JAXBUnWrapHelper helper = new JAXBUnWrapHelper();
+		VocabRequestType vocabRequestType = (VocabRequestType) helper.getObjectByClass(bodyType.getAny(),
+				VocabRequestType.class);        
+		return vocabRequestType;
 	}
 
 }

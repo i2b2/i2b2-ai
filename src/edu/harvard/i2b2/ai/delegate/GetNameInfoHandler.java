@@ -16,32 +16,40 @@ package edu.harvard.i2b2.ai.delegate;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.harvard.i2b2.ai.dao.FolderDao;
+import edu.harvard.i2b2.ai.dao.ConceptDao;
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
+import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
 import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
+import edu.harvard.i2b2.ai.datavo.wdo.DblookupsType;
 import edu.harvard.i2b2.ai.datavo.wdo.FindByChildType;
-import edu.harvard.i2b2.ai.datavo.wdo.FolderType;
-import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
+import edu.harvard.i2b2.ai.util.AIUtil;
 import edu.harvard.i2b2.ai.ws.GetNameInfoDataMessage;
 import edu.harvard.i2b2.ai.ws.MessageFactory;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
+import edu.harvard.i2b2.ai.datavo.ontology.ConceptsType;
+import edu.harvard.i2b2.ai.datavo.ontology.VocabRequestType;
 
 public class GetNameInfoHandler extends RequestHandler {
 	private GetNameInfoDataMessage  getFoldersMsg = null;
-	private FindByChildType getReturnType = null;
+	private VocabRequestType getReturnType = null;
 	private String userId = null;
-	private ProjectType projectInfo = null;
-
+	private SecurityType security = null;
+	private String projectInfo = null;
+	
 	public GetNameInfoHandler(GetNameInfoDataMessage requestMsg) throws I2B2Exception{
 		try {
 			
 			getFoldersMsg = requestMsg;
-			getReturnType = requestMsg.getFindByRequestType();
+			getReturnType = requestMsg.getVocabRequestType();//.getFindByRequestType(); //.getFindByRequestType();
 			userId = requestMsg.getMessageHeaderType().getSecurity().getUsername();
-			projectInfo = getRoleInfo(requestMsg.getMessageHeaderType());	
-			setDbInfo(requestMsg.getMessageHeaderType());
+
+			 security = requestMsg.getMessageHeaderType().getSecurity();
+			//securityType = requestMsg.getMessageHeaderType().getSecurity();
+			projectInfo = requestMsg.getMessageHeaderType().getProjectId();
+			//projectInfo = getRoleInfo(requestMsg.getMessageHeaderType());	
+			//setDbInfo(requestMsg.getMessageHeaderType());
 			
 		} catch (JAXBUtilException e) {
 			log.error("error setting up getNameInfoHandler");
@@ -53,8 +61,8 @@ public class GetNameInfoHandler extends RequestHandler {
 	public String execute() throws I2B2Exception{
 		
 		// call ejb and pass input object
-		FolderDao foldersDao = new FolderDao();
-		FoldersType folders = new FoldersType();
+		ConceptDao conceptsDao = new ConceptDao();
+		ConceptsType concepts = new ConceptsType();
 		ResponseMessageType responseMessageType = null;
 		String errResponse = "";
 		Boolean errorFlag = false;
@@ -71,7 +79,7 @@ public class GetNameInfoHandler extends RequestHandler {
 			errResponse = "User was not validated";
 			log.debug("USER_INVALID or PM_SERVICE_PROBLEM");
 		}
-		
+		/*
 		// validating all the request parameters
 		if(!errorFlag && getReturnType.getMatchStr() == null){
 			errorFlag = true;
@@ -114,11 +122,12 @@ public class GetNameInfoHandler extends RequestHandler {
 			errResponse = "Please enter a valid 'max' value. Max number should be greater than 0";
 			log.debug("Please enter a valid 'max' value. Max number should be greater than 0");			
 		}
-		
+		*/
 		// If userid is same as category then user is accessing his/her own directory
 		// if userid is not the same as category
 		// then either user is trying to access a shared directory
 		// or user is a manager
+		/*
 		if(!errorFlag && (!userId.toLowerCase().equals(getReturnType.getCategory().toLowerCase())) && !getReturnType.getCategory().equals("@")){
 			
 			// Check if user is a manager
@@ -144,43 +153,40 @@ public class GetNameInfoHandler extends RequestHandler {
 			errResponse = MessageFactory.convertToXMLString(responseMessageType);
 			return errResponse;	
 		}
+		*/
 		
-		List response = null;
+		String response = null;
 		try {
-				response = foldersDao.findWorkplaceByKeyword(getReturnType, userId, projectInfo, this.getDbInfo());
+				response = conceptsDao.getAIResult(getReturnType, security, projectInfo);
 		} catch (Exception e1) {
 			responseMessageType = MessageFactory.doBuildErrorResponse(getFoldersMsg.getMessageHeaderType(), "Database error");
 		}
 		
 		// no db error, but response is empty
-		if ((response == null) && (responseMessageType == null)) {
+		if ((response == null) ) { //&& (responseMessageType == null)) {
 			log.debug("query results are empty");
 			responseMessageType = MessageFactory.doBuildErrorResponse(getFoldersMsg.getMessageHeaderType(), "Query results are empty");
 		}
 		// no db error; non-empty response received
-		else if(responseMessageType == null) {
+		//else if(responseMessageType == null) {
 			// No errors, non-empty response received
 			// If max is specified, check that response is not > max
-			if(getReturnType.getMax() != null && response.size() > getReturnType.getMax()) {
+			/*if(getReturnType.getMax() != null && response.size() > getReturnType.getMax()) {
 				// max exceeded send error message
 					log.debug("Max request size of " + getReturnType.getMax() + " exceeded ");
 					responseMessageType = MessageFactory.doBuildErrorResponse(getFoldersMsg.getMessageHeaderType(), "MAX_EXCEEDED");
 			}
 				// otherwise send results
 			else {
-					Iterator it = response.iterator();
-					while (it.hasNext())
-					{
-						FolderType node = (FolderType)it.next();
-						folders.getFolder().add(node);
-					}
+					*/
 					// create ResponseMessageHeader using information from request message header.
-					MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(getFoldersMsg.getMessageHeaderType());          
-					responseMessageType = MessageFactory.createBuildResponse(messageHeader,folders);
-			}  
-		}        
-        String responseWdo = null;
-        responseWdo = MessageFactory.convertToXMLString(responseMessageType);
-		return responseWdo;
+	//				MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(getFoldersMsg.getMessageHeaderType());          
+					//DblookupsType folders = null;
+	//				responseMessageType = MessageFactory.createBuildResponse(messageHeader,response);
+			//}  
+	//	}        
+        //String responseWdo = null;
+        //responseWdo = MessageFactory.convertToXMLString(responseMessageType);
+		return response;
 	}    	
 }

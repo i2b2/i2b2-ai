@@ -27,8 +27,8 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResultStatusType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.StatusType;
+import edu.harvard.i2b2.ai.datavo.ontology.ConceptsType;
 import edu.harvard.i2b2.ai.datavo.wdo.DblookupsType;
-import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
 import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.common.util.jaxb.DTOFactory;
@@ -91,6 +91,7 @@ public class MessageFactory {
      *            Observation fact set to be returned to requester
      * @return BodyType object
      */
+    /*
     public static BodyType createBodyType(FoldersType workplaceData) {
 
         edu.harvard.i2b2.ai.datavo.wdo.ObjectFactory of = new edu.harvard.i2b2.ai.datavo.wdo.ObjectFactory();
@@ -99,6 +100,7 @@ public class MessageFactory {
 
         return bodyType;
     }
+    */
 
     public static BodyType createBodyType(String workplaceData) {
 
@@ -117,10 +119,10 @@ public class MessageFactory {
 	 *            Concept set to be returned to requester
 	 * @return BodyType object
 	 */
-	public static BodyType createBodyType(DblookupsType dblookups) {
+	public static BodyType createBodyType(ConceptsType dblookups) {
 		edu.harvard.i2b2.ai.datavo.wdo.ObjectFactory of = new edu.harvard.i2b2.ai.datavo.wdo.ObjectFactory();
 		BodyType bodyType = new BodyType();
-		bodyType.getAny().add(of.createDblookups(dblookups));
+		bodyType.getAny().add(dblookups);
 
 		return bodyType;
 	}
@@ -243,6 +245,7 @@ public class MessageFactory {
      * @return A String data type containing the ResponseMessage in XML format
      * @throws Exception
      */
+    /*
     public static ResponseMessageType createBuildResponse(
         MessageHeaderType messageHeaderType,
         FoldersType folders) {
@@ -262,7 +265,7 @@ public class MessageFactory {
         
         return respMessageType;
     }
-
+*/
     
     public static ResponseMessageType createBuildResponseRequestXML(
             MessageHeaderType messageHeaderType,
@@ -294,7 +297,7 @@ public class MessageFactory {
 	 * @return A String data type containing the ResponseMessage in XML format
 	 * @throws Exception
 	 */
-	public static ResponseMessageType createBuildResponse(MessageHeaderType messageHeaderType, DblookupsType dblookups) {
+	public static ResponseMessageType createBuildResponse(MessageHeaderType messageHeaderType, ConceptsType dblookups) {
 		ResponseMessageType respMessageType = null;
 		ResponseHeaderType respHeader = createResponseHeader("DONE", "Workplace processing completed");
 		BodyType bodyType = createBodyType(dblookups);

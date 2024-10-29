@@ -23,8 +23,6 @@ import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.BodyType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
-import edu.harvard.i2b2.ai.datavo.wdo.DblookupType;
-import edu.harvard.i2b2.ai.datavo.wdo.DeleteDblookupType;
 import edu.harvard.i2b2.ai.datavo.wdo.GetQuestionType;
 import edu.harvard.i2b2.ai.datavo.wdo.SetDblookupType;
 import edu.harvard.i2b2.ai.delegate.crc.CallCRCUtil;
@@ -101,6 +99,8 @@ public class AIDao extends JdbcDaoSupport {
 	private static String keyOrder = " LOWER(c_domain_id)=LOWER(?) AND (LOWER(c_owner_id)=LOWER(?) OR c_owner_id='@') ORDER BY c_project_path ";
 	private String domainId = null;
 	private String userId = null;
+	AIUtil aiutil = AIUtil.getInstance();
+
 
 	public AIDao() {		
 		//	initAIDao();
@@ -112,25 +112,7 @@ public class AIDao extends JdbcDaoSupport {
 		//	initAIDao();
 	}
 
-	private void initAIDao() {		
-		try {
-			ds = AIUtil.getInstance().getDataSource("java:/AIBootStrapDS");
-		} catch (I2B2Exception e2) {
-			log.error(e2.getMessage());;
-		} 
-		jt = new JdbcTemplate(ds);
-		String metadataSchema = "";
-		try {
-			Connection conn = ds.getConnection();
 
-			metadataSchema = conn.getSchema() + ".";
-			conn.close();
-		} catch (Exception e1) {
-			log.error(e1.getMessage());
-		}
-		dbluTable = metadataSchema + "ai_db_lookup ";
-		log.info("AI_DB_LOOKUP = " + dbluTable);
-	} 
 
 	public String slashEnd(String s) {
 		StringBuffer sb = new StringBuffer(s);
@@ -142,64 +124,7 @@ public class AIDao extends JdbcDaoSupport {
 	}
 
 
-	public int insertDblookup(final SetDblookupType dblookupType) throws DataAccessException, I2B2Exception {
-		int numRowsAdded = 0;
-		String sql = "INSERT INTO " + dbluTable +
-				"(c_domain_id, c_project_path, c_owner_id, c_db_fullschema, c_db_datasource, c_db_servertype, c_db_nicename, c_db_tooltip, c_comment, c_entry_date, c_change_date, c_status_cd) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";		
-		numRowsAdded = jt.update(sql, 
-				dblookupType.getDomainId(),  
-				slashEnd(dblookupType.getProjectPath()),
-				dblookupType.getOwnerId(),
-				dblookupType.getDbFullschema(),
-				dblookupType.getDbDatasource(),
-				dblookupType.getDbServertype(),
-				dblookupType.getDbNicename(),
-				dblookupType.getDbTooltip(),
-				dblookupType.getComment(),
-				Calendar.getInstance().getTime(),
-				Calendar.getInstance().getTime(),
-				dblookupType.getStatusCd()
-				);
-		log.info("insertDblookup - Number of rows added: " + numRowsAdded);
-		return numRowsAdded;
-	}
-
-	public int updateDblookup(final SetDblookupType dblookupType) throws DataAccessException, I2B2Exception {
-		int numRowsSet = 0;
-		String sql = "UPDATE " + dbluTable +
-				"SET c_db_fullschema=?, c_db_datasource=?, c_db_servertype=?, c_db_nicename=?, c_db_tooltip=?, c_comment=?, c_change_date=?, c_status_cd=? WHERE c_project_path=? AND " + 
-				key;		
-		numRowsSet = jt.update(sql, 
-				dblookupType.getDbFullschema(),
-				dblookupType.getDbDatasource(),
-				dblookupType.getDbServertype(),
-				dblookupType.getDbNicename(),
-				dblookupType.getDbTooltip(),
-				dblookupType.getComment(),
-				Calendar.getInstance().getTime(),
-				dblookupType.getStatusCd(),
-				slashEnd(dblookupType.getProjectPath()),
-				dblookupType.getDomainId(),  
-				dblookupType.getOwnerId()
-				);
-		log.info("updateDblookup - Number of rows updated: " + numRowsSet);
-		return numRowsSet;
-	}
-
-	public int deleteDblookup(final DeleteDblookupType dblookupType) throws DataAccessException, I2B2Exception {
-		int numRowsDeleted = 0;
-		String sql = "DELETE FROM " + dbluTable + " WHERE c_project_path=? AND " + key;		
-		try {
-			numRowsDeleted = jt.update(sql, slashEnd(dblookupType.getProjectPath()), dblookupType.getDomainId(), dblookupType.getOwnerId());
-		} catch (DataAccessException e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-			throw new I2B2DAOException("Database error");
-		}
-		return numRowsDeleted;	
-	}
-
-	public String getAIResult(GetQuestionType getResultType, SecurityType securityType, String projectInfo, DBInfoType dbInfo) {
+	public String getAIResult(GetQuestionType getResultType, SecurityType securityType, String projectInfo) {
 		// TODO Auto-generated method stub
 		String str = "";
 
@@ -213,12 +138,15 @@ public class AIDao extends JdbcDaoSupport {
 //		    \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n\nI want to find all patients with Diabetes over age of 65.\n\n### Response:\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<ns4:query_definition xmlns:ns2=\"http://www.i2b2.org/xsd/cell/crc/psm/1.1//\" xmlns:ns4=\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1//\" xmlns:ns3=\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1//\">",
 
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpPost httpPost = new HttpPost("http://127.0.0.1:5000/api/v1/generate");
-			String JSON_STRING="{ \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\\n\\n### Instruction:\\n\\n"+ getResultType.getQuestion() + "\\n\\n### Response:\\n```xml\\n<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\n<ns4:query_definition xmlns:ns2=\\\"http://www.i2b2.org/xsd/cell/crc/psm/1.1/\\\" xmlns:ns4=\\\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1/\\\" xmlns:ns3=\\\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1/\\\">\"," +
+			HttpPost httpPost = new HttpPost(aiutil.getAIEndpointReference()); //"http://127.0.0.1:5000/api/v1/generate");
+			String JSON_STRING=aiutil.getQuestionJson();
+					
+					/*"{ \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\\n\\n### Instruction:\\n\\n"+ getResultType.getQuestion() + "\\n\\n### Response:\\n```xml\\n<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\n<ns4:query_definition xmlns:ns2=\\\"http://www.i2b2.org/xsd/cell/crc/psm/1.1/\\\" xmlns:ns4=\\\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1/\\\" xmlns:ns3=\\\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1/\\\">\"," +
 					"\"instruction_template\": \"i2b2\"," +
 					"\"mode\": \"instruct\"," +
 					"\"max_new_tokens\": \"2048\"," +
 					"\"preset\": \"My Preset\" }";
+					*/
 //					"\"preset\": \"Divine Intellect\" }";
 			//HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
 

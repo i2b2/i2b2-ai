@@ -89,7 +89,50 @@ public class CallOntologyUtil {
 		return conceptsType;
 	}
 
+
+	public static String callOntology(VocabRequestType vocal, SecurityType securityType,  String projectId, String ontologyUrl ) throws Exception {
+		RequestMessageType requestMessageType = getI2B2RequestMessage(vocal, securityType, projectId.replaceAll("/", ""));
+		OMElement requestElement = buildOMElement(requestMessageType);
+		log.info("CRC Ontology call's request xml from callOntology:  " + requestElement);
+		log.debug("URL: " + ontologyUrl);
+		//ConceptsType conceptsType = null;
+			String response = ServiceClient.sendREST(ontologyUrl, requestElement);
+			//conceptsType = getConceptsFromResponse(response);
+
+		return response;
+	}
 	
+
+	private static RequestMessageType getI2B2RequestMessage(VocabRequestType vocal, SecurityType securityType,  String projectId ) {
+
+		MessageHeaderType messageHeaderType =   AIUtil.getMessageHeader();
+		messageHeaderType.setSecurity(securityType);
+		messageHeaderType.setProjectId(projectId);
+
+		messageHeaderType.setReceivingApplication(messageHeaderType
+				.getSendingApplication());
+		FacilityType facilityType = new FacilityType();
+		facilityType.setFacilityName("sample");
+		messageHeaderType.setSendingFacility(facilityType);
+		messageHeaderType.setReceivingFacility(facilityType);
+		// build message body
+	
+		
+		RequestMessageType requestMessageType = new RequestMessageType();
+		ObjectFactory of = new ObjectFactory();
+		BodyType bodyType = new BodyType();
+		bodyType.getAny().add(of.createGetNameInfo(vocal));//.createGetTermInfo(getTermInfo));
+		requestMessageType.setMessageBody(bodyType);
+
+		requestMessageType.setMessageHeader(messageHeaderType);
+
+		RequestHeaderType requestHeader = new RequestHeaderType();
+		requestHeader.setResultWaittimeMs(180000);
+		requestMessageType.setRequestHeader(requestHeader);
+
+		return requestMessageType;
+
+	}
 
 	private static RequestMessageType getI2B2RequestMessage(String conceptPath, String strategy, String category, SecurityType securityType,  String projectId ) {
 

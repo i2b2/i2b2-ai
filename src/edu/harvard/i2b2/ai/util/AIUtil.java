@@ -52,169 +52,136 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.ApplicationType;
  * @author rkuttan
  */
 public class AIUtil {
-    /** property file name which holds application directory name **/
- //   public static final String APPLICATION_DIRECTORY_PROPERTIES_FILENAME = "workplace_application_directory.properties";
 
-    /** application directory property name **/
- //   public static final String APPLICATIONDIR_PROPERTIES = "edu.harvard.i2b2.workplace.applicationdir";
+	/** property name for CRC endpoint reference **/
+	private static final String CRC_WS_EPR = "ai.ws.crc.url";
 
-    /** application property filename**/
- //   public static final String APPLICATION_PROPERTIES_FILENAME = "workplace.properties";
+	/** property name for ONT endpoint reference **/
+	private static final String ONT_WS_EPR = "ai.ws.ont.url";
 
-    /** property name for datasource present in app property file**/
-//   private static final String DATASOURCE_JNDI_PROPERTIES = "workplace.jndi.datasource_name";
+	/** property name for AI endpoint reference **/
+	private static final String AI_WS_EPR = "ai.ws.ai.url";
 
-    /** property name for metadata schema name**/
- //   private static final String METADATA_SCHEMA_NAME_PROPERTIES = "workplace.bootstrapdb.metadataschema";
+	/** property name for AI question json reference **/
+	private static final String AI_JSON_QUESTION = "ai.json.question";
 
-    /** spring bean name for datasource **/
- //   private static final String DATASOURCE_BEAN_NAME = "dataSource";
+	/** property name for AI chat json reference **/
+	private static final String AI_JSON_CHAT = "ai.json.chat";
 
-    /** property name for PM endpoint reference **/
-    private static final String PM_WS_EPR = "workplace.ws.pm.url";
-    
-    private static  String CRC_WS_EPR = "";
-    
-    /** property name for PM webserver method **/
-    private static final String PM_WS_METHOD = "workplace.ws.pm.webServiceMethod";
-
-    /** property name for PM bypass **/
-//    private static final String PM_BYPASS = "workplace.ws.pm.bypass";
-
-    /** property name for PM bypass project **/
-//    private static final String PM_BYPASS_PROJECT = "workplace.ws.pm.bypass.project";
-
-    /** property name for PM bypass role **/
-//    private static final String PM_BYPASS_ROLE = "workplace.ws.pm.bypass.role";
-
-    /** class instance field**/
-    private static AIUtil thisInstance = null;
-
-    /** service locator field**/
-    private static ServiceLocator serviceLocator = null;
-
-    /** field to store application properties **/
-    private static List<ParamType> appProperties = null;
-    
-    /** log **/
-    protected final Log log = LogFactory.getLog(getClass());
-
-    /** field to store app datasource**/
-    private DataSource dataSource = null;
-
-    /** single instance of spring bean factory**/
-    private BeanFactory beanFactory = null;
-
-    /**
-     * Private constructor to make the class singleton
-     */
-    private AIUtil() {
-    }
-
-    /**
-     * Return this class instance
-     * @return OntologyUtil
-     */
-    public static AIUtil getInstance() {
-        if (thisInstance == null) {
-            thisInstance = new AIUtil();
-        }
-
-        serviceLocator = ServiceLocator.getInstance();
-
-        return thisInstance;
-    }
-
-    /**
-     * Return the ontology spring config
-     * @return
-     */
-    /*
-    public BeanFactory getSpringBeanFactory() {
-        if (beanFactory == null) {
-            String appDir = null;
-
-            try {
-                //read application directory property file via classpath
-                Properties loadProperties = ServiceLocator.getProperties(APPLICATION_DIRECTORY_PROPERTIES_FILENAME);
-                //read directory property
-                appDir = loadProperties.getProperty(APPLICATIONDIR_PROPERTIES);
-            } catch (I2B2Exception e) {
-                log.error(APPLICATION_DIRECTORY_PROPERTIES_FILENAME +
-                    "could not be located from classpath ");
-            }
-
-            if (appDir != null && !appDir.trim().equals("")) {
-                FileSystemXmlApplicationContext ctx = new FileSystemXmlApplicationContext(
-                        "file:" + appDir + "/" +
-                        "WorkplaceApplicationContext.xml");
-                beanFactory = ctx.getBeanFactory();
-            } else {
-				 String path = WorkplaceUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				 path = path.substring(0, path.indexOf("deployments"));
-                FileSystemXmlApplicationContext ctx = new FileSystemXmlApplicationContext(
-                        path + "configuration/workplaceapp/WorkplaceApplicationContext.xml");
-                beanFactory = ctx.getBeanFactory();
-            }
-        }
-
-        return beanFactory;
-    }
-*/
-    /**
-     * Return metadata schema name
-     * @return
-     * @throws I2B2Exception
-     */
- //   public String getMetaDataSchemaName() throws I2B2Exception {
- //       return getPropertyValue(METADATA_SCHEMA_NAME_PROPERTIES).trim()+ ".";
- //   }
-
-    /**
-     * Return PM cell endpoint reference URL
-     * @return
-     * @throws I2B2Exception
-     */
-    public String getPmEndpointReference() throws I2B2Exception {
-        return getPropertyValue(PM_WS_EPR).trim();
-    }
-
-    
-    public void setCRCEndpointReference(String s)  {
-         CRC_WS_EPR = s;
-    }
-
-    
-    public String getCRCUrl() throws I2B2Exception {
-        return CRC_WS_EPR;
-    }
+	/** property name for AI ontology json reference **/
+	private static final String AI_JSON_ONTOLOGY = "ai.json.ontology";
 
 
-    /**
-     * Return app server datasource
-     * @return datasource
-     * @throws I2B2Exception
-     */
-    public DataSource getDataSource(String dataSourceName) throws I2B2Exception {    	
-    	dataSource = serviceLocator
-		.getAppServerDataSource(dataSourceName);
-    	return dataSource;
-  
-    }
-    
-    //---------------------
-    // private methods here
-    //---------------------
+	/** class instance field**/
+	private static AIUtil thisInstance = null;
+
+	/** service locator field**/
+	private static ServiceLocator serviceLocator = null;
+
+	/** field to store application properties **/
+	private static List<ParamType> appProperties = null;
+
+	/** log **/
+	protected final Log log = LogFactory.getLog(getClass());
+
+	/** field to store app datasource**/
+	private DataSource dataSource = null;
+
+	/** single instance of spring bean factory**/
+	private BeanFactory beanFactory = null;
+
+	/**
+	 * Private constructor to make the class singleton
+	 */
+	private AIUtil() {
+	}
+
+	/**
+	 * Return this class instance
+	 * @return OntologyUtil
+	 */
+	public static AIUtil getInstance() {
+		if (thisInstance == null) {
+			thisInstance = new AIUtil();
+		}
+
+		serviceLocator = ServiceLocator.getInstance();
+
+		return thisInstance;
+	}
 
 
-    /**
-     * Load application property file into memory
-     */
-    private String getPropertyValue(String propertyName)
-        throws I2B2Exception {
-    	
-    	
-    	if (appProperties == null) {
+	/**
+	 * Return ONT cell endpoint reference URL
+	 * @return
+	 * @throws I2B2Exception
+	 */
+	public String getOntEndpointReference() throws I2B2Exception {
+		return getPropertyValue(ONT_WS_EPR).trim();
+	}
+
+	/**
+	 * Return CRC cell endpoint reference URL
+	 * @return
+	 * @throws I2B2Exception
+	 */
+	public String getAIEndpointReference() throws I2B2Exception {
+		return getPropertyValue(AI_WS_EPR).trim();
+	}
+
+	/**
+	 * Return CRC cell endpoint reference URL
+	 * @return
+	 * @throws I2B2Exception
+	 */
+	public String getChatJson() throws I2B2Exception {
+		return getPropertyValue(AI_JSON_CHAT).trim();
+	}
+
+	/**
+	 * Return CRC cell endpoint reference URL
+	 * @return
+	 * @throws I2B2Exception
+	 */
+	public String getOntologyJson() throws I2B2Exception {
+		return getPropertyValue(AI_JSON_ONTOLOGY).trim();
+	}
+
+	/**
+	 * Return CRC cell endpoint reference URL
+	 * @return
+	 * @throws I2B2Exception
+	 */
+	public String getQuestionJson() throws I2B2Exception {
+		return getPropertyValue(AI_JSON_QUESTION).trim();
+	}
+
+
+	/**
+	 * Return app server datasource
+	 * @return datasource
+	 * @throws I2B2Exception
+	 */
+	public DataSource getDataSource(String dataSourceName) throws I2B2Exception {    	
+		dataSource = serviceLocator
+				.getAppServerDataSource(dataSourceName);
+		return dataSource;
+
+	}
+
+	//---------------------
+	// private methods here
+	//---------------------
+
+
+	/**
+	 * Load application property file into memory
+	 */
+	private String getPropertyValue(String propertyName)
+			throws I2B2Exception {
+
+
+		if (appProperties == null) {
 
 
 
@@ -225,10 +192,10 @@ public class AIUtil {
 
 				JdbcTemplate jt = new JdbcTemplate(ds);
 				Connection conn = ds.getConnection();
-				
+
 				String metadataSchema = conn.getSchema();
 				conn.close();
-				String sql =  "select * from " + metadataSchema + ".hive_cell_params where status_cd <> 'D' and cell_id = 'WORK'";
+				String sql =  "select * from " + metadataSchema + ".hive_cell_params where status_cd <> 'D' and cell_id = 'AI'";
 
 				log.debug("Start query");
 				appProperties =  jt.query(sql, new getHiveCellParam());
@@ -245,24 +212,25 @@ public class AIUtil {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-    	}
-    	
-    	String propertyValue = null;//appProperties.getProperty(propertyName);
+
+		}
+
+		String propertyValue = null;//appProperties.getProperty(propertyName);
 		for (int i=0; i < appProperties.size(); i++)
 		{
 			if (appProperties.get(i).getName() != null)
 			{
-				if (appProperties.get(i).getDatatype().equalsIgnoreCase("U"))
-					try {
-						 propertyValue = ServiceClient.getContextRoot() + appProperties.get(i).getValue();
+				if (appProperties.get(i).getName().equalsIgnoreCase(propertyName))
+					if (appProperties.get(i).getDatatype().equalsIgnoreCase("U"))
+						try {
+							propertyValue = ServiceClient.getContextRoot() + appProperties.get(i).getValue();
 
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				else 
-					propertyValue = appProperties.get(i).getValue();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					else 
+						propertyValue = appProperties.get(i).getValue();
 			}
 		}
 
@@ -273,62 +241,10 @@ public class AIUtil {
 		}
 
 		return propertyValue;
-    	/*
-        if (appProperties == null) {
-            //read application directory property file
-            Properties loadProperties = ServiceLocator.getProperties(APPLICATION_DIRECTORY_PROPERTIES_FILENAME);
 
-            //read application directory property
-            String appDir = loadProperties.getProperty(APPLICATIONDIR_PROPERTIES);
+	}
 
-            if (appDir == null) {
-                throw new I2B2Exception("Could not find " +
-                    APPLICATIONDIR_PROPERTIES + "from " +
-                    APPLICATION_DIRECTORY_PROPERTIES_FILENAME);
-            }
-			if (appDir.trim().equals(""))
-			{
-				
-				appDir =  "standalone/configuration/workplaceapp";
-			
-			}
-            String appPropertyFile = appDir + "/" +
-                APPLICATION_PROPERTIES_FILENAME;
-
-            try {
-                FileSystemResource fileSystemResource = new FileSystemResource(appPropertyFile);
-                PropertiesFactoryBean pfb = new PropertiesFactoryBean();
-                pfb.setLocation(fileSystemResource);
-                pfb.afterPropertiesSet();
-                appProperties = (Properties) pfb.getObject();
-            } catch (IOException e) {
-                throw new I2B2Exception("Application property file(" +
-                    appPropertyFile +
-                    ") missing entries or not loaded properly");
-            }
-
-            if (appProperties == null) {
-                throw new I2B2Exception("Application property file(" +
-                    appPropertyFile +
-                    ") missing entries or not loaded properly");
-            }
-        }
-
-        String propertyValue = appProperties.getProperty(propertyName);
-
-        if ((propertyValue != null) && (propertyValue.trim().length() > 0)) {
-            ;
-        } else {
-            throw new I2B2Exception("Application property file(" +
-                APPLICATION_PROPERTIES_FILENAME + ") missing " + propertyName +
-                " entry");
-        }
-
-        return propertyValue;
-        */
-    }
-
-    public static MessageHeaderType getMessageHeader()  {
+	public static MessageHeaderType getMessageHeader()  {
 		MessageHeaderType messageHeader = new MessageHeaderType();
 		ApplicationType appType = new ApplicationType();
 		try {
@@ -347,11 +263,11 @@ class getHiveCellParam implements RowMapper<ParamType> {
 	@Override
 	public ParamType mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-			ParamType param = new ParamType();
-			param.setId(rs.getInt("id"));
-			param.setName(rs.getString("param_name_cd"));
-			param.setValue(rs.getString("value"));
-			param.setDatatype(rs.getString("datatype_cd"));
-			return param;
-		} 
+		ParamType param = new ParamType();
+		param.setId(rs.getInt("id"));
+		param.setName(rs.getString("param_name_cd"));
+		param.setValue(rs.getString("value"));
+		param.setDatatype(rs.getString("datatype_cd"));
+		return param;
+	} 
 }

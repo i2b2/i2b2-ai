@@ -24,8 +24,6 @@ import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
 import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
-import edu.harvard.i2b2.ai.datavo.wdo.FolderType;
-import edu.harvard.i2b2.ai.datavo.wdo.FoldersType;
 import edu.harvard.i2b2.ai.datavo.wdo.GetQuestionType;
 import edu.harvard.i2b2.ai.util.AIJAXBUtil;
 import edu.harvard.i2b2.ai.ws.GetAIResultDataMessage;
@@ -40,12 +38,12 @@ public class GetAIResultHandler extends RequestHandler {
 	private GetQuestionType getResultType = null;
 	private String projectInfo = null;
 	private SecurityType securityType = null;
-private String text = null;
+	private String text = null;
 	public GetAIResultHandler(GetAIResultDataMessage requestMsg) throws I2B2Exception{
 
 		getResultMsg = requestMsg;
 		getResultType = requestMsg.getAiResultType();
-		
+
 		securityType = requestMsg.getMessageHeaderType().getSecurity();
 		projectInfo = requestMsg.getMessageHeaderType().getProjectId();
 		if (getResultType == null) 
@@ -57,44 +55,44 @@ private String text = null;
 					"You may wish to retry your last action";
 
 			getResultType = new GetQuestionType();
-			
+
 			ResponseMessageType responseMsgType = MessageFactory.doBuildErrorResponse(null,
 					unknownErrorMessage);
 			aieDataResponse = MessageFactory.convertToXMLString(responseMsgType);
-			*/
-			
+			 */
+
 			String result = aieDataResponse.substring(aieDataResponse.indexOf("<question>")+10, aieDataResponse.indexOf("</question>"));
-			
+
 			getResultType.setQuestion(result);
 		}
 		List<Object> text2 = requestMsg.getRequestMessageType().getMessageBody().getAny();
 		text = requestMsg.getRequestMessageType().getMessageBody().toString();
-	//	JAXBElement jaxbElement = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(requestWdo);
-	//	this.reqMessageType = (RequestMessageType) jaxbElement.getValue();
-	//	projectInfo = getRoleInfo(requestMsg.getMessageHeaderType());	
-	//	setDbInfo(requestMsg.getMessageHeaderType());
+		//	JAXBElement jaxbElement = WorkplaceJAXBUtil.getJAXBUtil().unMashallFromString(requestWdo);
+		//	this.reqMessageType = (RequestMessageType) jaxbElement.getValue();
+		//	projectInfo = getRoleInfo(requestMsg.getMessageHeaderType());	
+		//	setDbInfo(requestMsg.getMessageHeaderType());
 	}
-	
+
 	@Override
 	public String execute() throws I2B2Exception{
 		// call ejb and pass input object
 		AIDao childDao = new AIDao();
-		FoldersType folders = new FoldersType();
+		//FoldersType folders = new FoldersType();
 		ResponseMessageType responseMessageType = null;
-		
+
 		// check to see if we have projectInfo (if not indicates PM service problem)
-	/*	if(projectInfo == null) {
+		/*	if(projectInfo == null) {
 			String response = null;
 			responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "User was not validated");
 			response = MessageFactory.convertToXMLString(responseMessageType);
 			log.debug("USER_INVALID or PM_SERVICE_PROBLEM");
 			return response;	
 		}
-		*/
-		
+		 */
+
 		String response = null;	
 		try {
-			response = childDao.getAIResult(getResultType, securityType, projectInfo, this.getDbInfo());
+			response = childDao.getAIResult(getResultType, securityType, projectInfo);
 		} catch (Exception e1) {
 			log.error(e1.getMessage());
 			responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "Database error");
@@ -107,8 +105,8 @@ private String text = null;
 				log.debug("query results are empty");
 				responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "Query results are empty");
 			}
-			
-//			 No errors, non-empty response received
+
+			//			 No errors, non-empty response received
 			// If max is specified, check that response is not > max
 			/*
 			else if(getResultType.getMax() != null) {
@@ -130,7 +128,7 @@ private String text = null;
 					responseMessageType = MessageFactory.createBuildResponse(messageHeader,folders);
 				}       
 			}
-			*/
+			 */
 
 			// max not specified so send results
 			else {
@@ -143,18 +141,18 @@ private String text = null;
 						node.setProtectedAccess("N");
 					folders.getFolder().add(node);
 				}*/
-				
+
 				MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(getResultMsg.getMessageHeaderType());          
 				responseMessageType = MessageFactory.createNonStandardResponse(messageHeader, response); //.createBuildResponse(messageHeader,response);
-				
+
 			}     
 		}
-        String responseWdo = null;
-       
+		String responseWdo = null;
+
 		responseWdo = MessageFactory.convertToXMLString(responseMessageType);
 		if(responseWdo == null)
 			log.error("GetResult responseWdo is null");
 		return responseWdo;
 	}
-    
+
 }
