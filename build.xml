@@ -11,7 +11,7 @@
 	
 	<!-- ========== Executable Targets ======================================== -->
 	<property name="Name" value="AI" />
-	<import file="edu.harvard.i2b2.server-common/common_build.xml" />
+	<import file="../edu.harvard.i2b2.server-common/common_build.xml" />
 
 	<!-- =================================================================== -->
 	<!-- 								INIT 								 -->

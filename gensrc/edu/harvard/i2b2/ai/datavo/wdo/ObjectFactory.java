@@ -8,10 +8,12 @@
 
 package edu.harvard.i2b2.ai.datavo.wdo;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
+
+import edu.harvard.i2b2.ai.datavo.ontology.ConceptsType;
 
 
 /**
@@ -65,6 +67,10 @@ public class ObjectFactory {
     public AnnotateChildType createAnnotateChildType() {
         return new AnnotateChildType();
     }
+    
+    public ConceptsType createConceptsType() {
+    	return new ConceptsType();
+    }
 
     /**
      * Create an instance of {@link ExportChildType }
@@ -82,14 +88,7 @@ public class ObjectFactory {
         return new GetChildrenType();
     }
 
-    /**
-     * Create an instance of {@link FoldersType }
-     * 
-     */
-    public FoldersType createFoldersType() {
-        return new FoldersType();
-    }
-
+   
     /**
      * Create an instance of {@link GetReturnType }
      * 
@@ -114,14 +113,7 @@ public class ObjectFactory {
         return new DeleteDblookupType();
     }
 
-    /**
-     * Create an instance of {@link FolderType }
-     * 
-     */
-    public FolderType createFolderType() {
-        return new FolderType();
-    }
-
+  
     /**
      * Create an instance of {@link GetQuestionType }
      * 
@@ -246,15 +238,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FolderType }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.i2b2.org/xsd/cell/ai/1.1/", name = "add_child")
-    public JAXBElement<FolderType> createAddChild(FolderType value) {
-        return new JAXBElement<FolderType>(_AddChild_QNAME, FolderType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetReturnType }{@code >}}
      * 
      */
@@ -290,6 +273,16 @@ public class ObjectFactory {
         return new JAXBElement<String>(_RequestXML_QNAME, String.class, null, value);
     }
 
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link DblookupsType }{@code >}}
+     * 
+    
+    @XmlElementDecl(namespace = "http://www.i2b2.org/xsd/cell/ai/1.1/", name = "dblookups")
+    public JAXBElement<ConceptsType> createConcepts(ConceptsType value) {
+        return new JAXBElement<ConceptsType>(_Concepts_QNAME, ConceptsType.class, null, value);
+    }
+*/
+    
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DblookupsType }{@code >}}
      * 
@@ -353,14 +346,7 @@ public class ObjectFactory {
         return new JAXBElement<GetChildrenType>(_GetChildren_QNAME, GetChildrenType.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FoldersType }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.i2b2.org/xsd/cell/ai/1.1/", name = "folders")
-    public JAXBElement<FoldersType> createFolders(FoldersType value) {
-        return new JAXBElement<FoldersType>(_Folders_QNAME, FoldersType.class, null, value);
-    }
+   
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DeleteChildType }{@code >}}

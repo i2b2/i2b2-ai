@@ -15,12 +15,14 @@
 package edu.harvard.i2b2.ai.dao;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.ItemType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.MasterInstanceResultResponseType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.PanelType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionRequestType;
+import edu.harvard.i2b2.ai.datavo.crc.setfinder.query.QueryDefinitionType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.BodyType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.pm.ProjectType;
-import edu.harvard.i2b2.ai.datavo.wdo.DblookupType;
-import edu.harvard.i2b2.ai.datavo.wdo.DeleteDblookupType;
-import edu.harvard.i2b2.ai.datavo.wdo.FindByChildType;
 import edu.harvard.i2b2.ai.datavo.wdo.GetQuestionType;
 import edu.harvard.i2b2.ai.datavo.wdo.SetDblookupType;
 import edu.harvard.i2b2.ai.delegate.crc.CallCRCUtil;
@@ -34,7 +36,7 @@ import edu.harvard.i2b2.common.util.jaxb.JAXBUnWrapHelper;
 import edu.harvard.i2b2.common.util.jaxb.JAXBUtilException;
 import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
 import edu.harvard.i2b2.ai.datavo.ontology.ConceptsType;
-import edu.harvard.i2b2.ai.datavo.ontology.VocabRequestType;
+import edu.harvard.i2b2.ai.datavo.ontology.ConceptType;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -64,7 +66,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-*/
+ */
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -88,9 +90,11 @@ import com.google.gson.JsonParser;
 
 //import com.google.gson.Gson;
 
-public class ConceptDao extends JdbcDaoSupport {
+public class QueryDao extends JdbcDaoSupport {
 
-	private static Log log = LogFactory.getLog(ConceptDao.class);
+	private static Log log = LogFactory.getLog(QueryDao.class);
+	private static DataSource ds = null;
+	private static JdbcTemplate jt;
 	private static String dbluTable;
 	private static String key = " LOWER(c_domain_id)=LOWER(?) AND (LOWER(c_owner_id)=LOWER(?) OR c_owner_id='@') ";
 	private static String keyOrder = " LOWER(c_domain_id)=LOWER(?) AND (LOWER(c_owner_id)=LOWER(?) OR c_owner_id='@') ORDER BY c_project_path ";
@@ -99,17 +103,17 @@ public class ConceptDao extends JdbcDaoSupport {
 	AIUtil aiutil = AIUtil.getInstance();
 
 
-	public ConceptDao() {		
+	public QueryDao() {		
 		//	initAIDao();
 	} 
 
-	public ConceptDao(MessageHeaderType reqMsgHdr) throws I2B2Exception, JAXBUtilException {
+	public QueryDao(MessageHeaderType reqMsgHdr) throws I2B2Exception, JAXBUtilException {
 		domainId = reqMsgHdr.getSecurity().getDomain();
 		userId = reqMsgHdr.getSecurity().getUsername();
 		//	initAIDao();
 	}
 
-	
+
 
 	public String slashEnd(String s) {
 		StringBuffer sb = new StringBuffer(s);
@@ -121,104 +125,157 @@ public class ConceptDao extends JdbcDaoSupport {
 	}
 
 
-
-	public String getAIResult(VocabRequestType getResultType, SecurityType securityType, String projectInfo) {
+	public String getQueryResult(GetQuestionType getResultType, SecurityType securityType, String projectInfo) {
 		// TODO Auto-generated method stub
 		String str = "";
 
-		// MM skip json api call
 
-		//CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-		/* Skpped call */
+
+		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+		
 		try {
 
-			
-//		    \"prompt\": \" Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n\nI want to find all patients with Diabetes over age of 65.\n\n### Response:\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<ns4:query_definition xmlns:ns2=\"http://www.i2b2.org/xsd/cell/crc/psm/1.1//\" xmlns:ns4=\"http://www.i2b2.org/xsd/cell/crc/psm/querydefinition/1.1//\" xmlns:ns3=\"http://www.i2b2.org/xsd/cell/crc/psm/analysisdefinition/1.1//\">",
+
 
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			HttpPost httpPost = new HttpPost(aiutil.getAIEndpointReference()); //"http://127.0.0.1:5000/v1/chat/completions");
-			String JSON_STRING=aiutil.getOntologyJson();
+			String JSON_STRING=aiutil.getQuestionJson();
 			if (JSON_STRING.contains("{{{QUESTION}}}"))
-				JSON_STRING = JSON_STRING.replaceAll("\\{\\{\\{QUESTION\\}\\}\\}", getResultType.getMatchStr().getValue());
+				JSON_STRING = JSON_STRING.replaceAll("\\{\\{\\{QUESTION\\}\\}\\}", getResultType.getQuestion());
 
-							
-		    HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
+
+			HttpEntity stringEntity = new StringEntity(JSON_STRING,ContentType.APPLICATION_JSON);
 
 			httpPost.setEntity(stringEntity );
 			CloseableHttpResponse response = httpclient.execute(httpPost);
 
 			HttpEntity entity = response.getEntity();
 			str = EntityUtils.toString(entity);
-			/*
-			str = "{\r\n"
-					+ "    \"id\": \"chatcmpl-1729883329290381568\",\r\n"
-					+ "    \"object\": \"chat.completion\",\r\n"
-					+ "    \"created\": 1729883329,\r\n"
-					+ "    \"model\": \"ruslanmv_Medical-Llama3-8B\",\r\n"
-					+ "    \"choices\": [\r\n"
-					+ "        {\r\n"
-					+ "            \"index\": 0,\r\n"
-					+ "            \"finish_reason\": \"stop\",\r\n"
-					+ "            \"message\": {\r\n"
-					+ "                \"role\": \"assistant\",\r\n"
-					+ "                \"content\": \"```json { \\\"answer\\\": \\\"hypertension\\\" } ```\"\r\n"
-					+ "            }\r\n"
-					+ "        }\r\n"
-					+ "    ],\r\n"
-					+ "    \"usage\": {\r\n"
-					+ "        \"prompt_tokens\": 61,\r\n"
-					+ "        \"completion_tokens\": 14,\r\n"
-					+ "        \"total_tokens\": 75\r\n"
-					+ "    }\r\n"
-					+ "}";
-	*/
-		//	log.info("From AI: " + str);
+
+
 			JsonElement jelement = new JsonParser().parse(str);
 			JsonObject  jobject = jelement.getAsJsonObject();
 			//JsonElement c = jobject.get("choices");
-			
-			
+
+
 			JsonObject jObj=(JsonObject)jobject.get("choices").getAsJsonArray().get(0);
 			//JsonElement msg = jObj.get("message");
-			  JsonElement jObj2 = jObj.get("message");//.get(0);
-			    jobject =jObj2.getAsJsonObject();
+			JsonElement jObj2 = jObj.get("message");//.get(0);
+			jobject =jObj2.getAsJsonObject();
 			//System.out.println(jObj2.get("content"));
 
 			//JsonElement d = jobject.get("choices").getAsJsonObject().get("message");
 			str = jobject.get("content").getAsString(); //.getAsJsonArray("content");
-			str = str.substring(str.indexOf('{'),str.lastIndexOf('}')+1);
+			log.info("initial AI response: " + str);
+			if (str.endsWith("\""))
+				str = str.substring(str.indexOf('{')) + "}";
+			else
+				str = str.substring(str.indexOf('{'),str.lastIndexOf('}')+1);
 			jobject = new JsonParser().parse(str).getAsJsonObject(); //jarray.get(0).getAsJsonObject();
 			str = jobject.get("answer").getAsString();
 			//str = str.split("\n")[0];
 			str = str.strip();
 			if (str.endsWith("."))
 				str = str.substring(0, str.length()-1);
-			
 
+			log.info("Cleaned AI response: " + str );
 			//str = jobject.toString();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			// @Deprecated httpClient.getConnectionManager().shutdown(); 
 		}
-
-		String response = null;
+		
+		//QueryDefinitionType queryFromAI = null;
+		QueryDefinitionType query = new QueryDefinitionType();
 		try {
-			
-			
-			getResultType.getMatchStr().setValue(str);
-			 response = CallOntologyUtil.callOntology(getResultType, securityType,  projectInfo, aiutil.getOntEndpointReference() + "/OntologyService/getNameInfo");
-					//.callSetfinderQuery(query,securityType, projectInfo);
-			
+			String[] terms = str.toLowerCase().split("and");
+
+			query.setQueryName(str);
+			query.setSpecificityScale(0);
+			query.setQueryTiming("ANY");
+
+			//List<PanelType> panelList = queryFromAI.getPanel();
+
+			//for (PanelType panel: panelList)
+			//for (int i=0; i < panelList.size(); i++)
+			for (int i=0; i < terms.length; i++)
+			{
+				PanelType panel = new PanelType();
+
+				PanelType newPanel = new PanelType();
+				newPanel.setPanelNumber(i+1);
+				newPanel.setPanelTiming("ANY");
+				newPanel.setPanelAccuracyScale(100);
+				newPanel.setInvert(0);
+				newPanel.setTotalItemOccurrences(panel.getTotalItemOccurrences());
+
+				//List<ItemType> itemList = panel.getItem();
+
+				ItemType newItem = new ItemType();
+				
+				terms[i] = terms[i].trim();
+				terms[i] = terms[i].replaceAll("_", " ");
+
+				ConceptsType concepts = CallOntologyUtil.callOntology(terms[i], "contains",  securityType, "@", projectInfo, "http://127.0.0.1:9090/i2b2/services/OntologyService/getNameInfo");
+
+				if (concepts != null && concepts.getConcept() != null)
+				{
+					//newItem.setDimDimcode( concepts.getConcept().get(0).getDimcode());
+					for (ConceptType concept : concepts.getConcept()) {
+						newItem.setHlevel( concept.getLevel());
+						newItem.setItemName( concept.getName());
+						newItem.setItemKey( concept.getKey());
+						newItem.setItemIcon( concept.getVisualattributes());
+						newItem.setTooltip( concept.getTooltip());
+						newItem.setClazz( "ENC");
+						newItem.setItemIsSynonym( false);
+						log.info("Concept: " + concept.getName());
+						if (concept.getTotalnum() != null && concept.getTotalnum() > 0)
+							newPanel.getItem().add(newItem);
+					}
+				}
+				
+				if (newPanel.getItem().size() > 0)
+					query.getPanel().add(newPanel);
+			}
+
+
+			MasterInstanceResultResponseType response = CallCRCUtil.callSetfinderQuery(query,securityType, projectInfo);
+			if (response != null)
+				str = response.getQueryMaster().getQueryMasterId();
+			else
+				str = "-1";
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		return response;
+
+
+		return str;
 	}
 
+	private QueryDefinitionType  getQueryDefinitionType(String requestString) throws I2B2DAOException { 
+		QueryDefinitionType queryDefReqType = null;
+		JAXBElement responseJaxb;
+		try {
+			responseJaxb = AIJAXBUtil.getJAXBUtil()
+					.unMashallFromString(requestString);
 
+			queryDefReqType = (QueryDefinitionType) responseJaxb.getValue();
+			//BodyType bodyType = r.getMessageBody();
+			// 	get body and search for analysis definition
+			JAXBUnWrapHelper unWraphHelper = new JAXBUnWrapHelper();
+
+
+			//queryDefReqType = (QueryDefinitionRequestType) unWraphHelper
+			//		.getObjectByClass(bodyType.getAny(),
+			//				QueryDefinitionRequestType.class);
+		} catch (JAXBUtilException e) {
+			throw new I2B2DAOException(e.getMessage());
+		}
+
+		return queryDefReqType;
+	}
 }
 

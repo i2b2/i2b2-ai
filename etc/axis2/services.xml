@@ -11,28 +11,7 @@
     <description>
         AI Processing Service
     </description>
-    <operation name="getChildren">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="getFoldersByProject">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="getFoldersByUserId">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-        <operation name="moveChild">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="deleteChild">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="annotateChild">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="addChild">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>
-    <operation name="renameChild">
+    <operation name="getQuery">
         <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
     </operation>
     <operation name="getNameInfo">
@@ -51,9 +30,6 @@
     <operation name="deleteDblookup">
         <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
     </operation>
-    <operation name="getAi">
-        <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
-    </operation>    
     <operation name="setProtectedAccess">
         <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
     </operation>

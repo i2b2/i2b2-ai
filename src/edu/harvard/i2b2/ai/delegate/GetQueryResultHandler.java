@@ -19,7 +19,7 @@ import java.util.List;
 
 import jakarta.xml.bind.JAXBElement;
 
-import edu.harvard.i2b2.ai.dao.AIDao;
+import edu.harvard.i2b2.ai.dao.QueryDao;
 import edu.harvard.i2b2.ai.datavo.i2b2message.MessageHeaderType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.RequestMessageType;
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
@@ -33,13 +33,13 @@ import edu.harvard.i2b2.common.exception.I2B2Exception;
 import edu.harvard.i2b2.ai.datavo.i2b2message.SecurityType;
 
 
-public class GetAIResultHandler extends RequestHandler {
+public class GetQueryResultHandler extends RequestHandler {
 	private GetAIResultDataMessage  getResultMsg = null;
 	private GetQuestionType getResultType = null;
 	private String projectInfo = null;
 	private SecurityType securityType = null;
 	private String text = null;
-	public GetAIResultHandler(GetAIResultDataMessage requestMsg) throws I2B2Exception{
+	public GetQueryResultHandler(GetAIResultDataMessage requestMsg) throws I2B2Exception{
 
 		getResultMsg = requestMsg;
 		getResultType = requestMsg.getAiResultType();
@@ -76,7 +76,7 @@ public class GetAIResultHandler extends RequestHandler {
 	@Override
 	public String execute() throws I2B2Exception{
 		// call ejb and pass input object
-		AIDao childDao = new AIDao();
+		QueryDao childDao = new QueryDao();
 		//FoldersType folders = new FoldersType();
 		ResponseMessageType responseMessageType = null;
 
@@ -92,7 +92,7 @@ public class GetAIResultHandler extends RequestHandler {
 
 		String response = null;	
 		try {
-			response = childDao.getAIResult(getResultType, securityType, projectInfo);
+			response = childDao.getQueryResult(getResultType, securityType, projectInfo);
 		} catch (Exception e1) {
 			log.error(e1.getMessage());
 			responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "Database error");
@@ -106,42 +106,8 @@ public class GetAIResultHandler extends RequestHandler {
 				responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "Query results are empty");
 			}
 
-			//			 No errors, non-empty response received
-			// If max is specified, check that response is not > max
-			/*
-			else if(getResultType.getMax() != null) {
-				// if max exceeded send error message
-				if(response.size() > getResultType.getMax()){
-					log.debug("Max request size of " + getResultType.getMax() + " exceeded ");
-					responseMessageType = MessageFactory.doBuildErrorResponse(getResultMsg.getMessageHeaderType(), "MAX_EXCEEDED");
-				}
-				// otherwise send results
-				else {
-					Iterator it = response.iterator();
-					while (it.hasNext())
-					{
-						FolderType node = (FolderType)it.next();
-						folders.getFolder().add(node);
-					}
-					// create ResponseMessageHeader using information from request message header.
-					MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(getResultMsg.getMessageHeaderType());          
-					responseMessageType = MessageFactory.createBuildResponse(messageHeader,folders);
-				}       
-			}
-			 */
-
 			// max not specified so send results
 			else {
-				/*
-				Iterator it = response.iterator();
-				while (it.hasNext())
-				{
-					FolderType node = (FolderType)it.next();
-					if (node.getProtectedAccess() == null)
-						node.setProtectedAccess("N");
-					folders.getFolder().add(node);
-				}*/
-
 				MessageHeaderType messageHeader = MessageFactory.createResponseMessageHeader(getResultMsg.getMessageHeaderType());          
 				responseMessageType = MessageFactory.createNonStandardResponse(messageHeader, response); //.createBuildResponse(messageHeader,response);
 

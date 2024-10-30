@@ -5,5 +5,5 @@
 // Generated on: 2023.09.15 at 01:59:06 PM EDT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.i2b2.org/xsd/cell/crc/psm/1.1/")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www.i2b2.org/xsd/cell/crc/psm/1.1/")
 package edu.harvard.i2b2.ai.datavo.crc.setfinder.query;

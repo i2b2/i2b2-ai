@@ -160,7 +160,7 @@ public class CallOntologyUtil {
 		vocal.setBlob(false);
 		vocal.setKeyname(true);
 		vocal.setReducedResults(true);
-		vocal.setMax(200);
+		vocal.setMax(0);
 
 		
 		

@@ -16,15 +16,9 @@
 package edu.harvard.i2b2.ai.ws;
 
 import edu.harvard.i2b2.ai.datavo.i2b2message.ResponseMessageType;
-import edu.harvard.i2b2.ai.delegate.GetAIResultHandler;
+import edu.harvard.i2b2.ai.delegate.GetQueryResultHandler;
 import edu.harvard.i2b2.ai.delegate.GetNameInfoHandler;
 import edu.harvard.i2b2.ai.delegate.RequestHandler;
-import edu.harvard.i2b2.ai.ws.DeleteDblookupDataMessage;
-import edu.harvard.i2b2.ai.ws.ExecutorRunnable;
-import edu.harvard.i2b2.ai.ws.GetAllDblookupsDataMessage;
-import edu.harvard.i2b2.ai.ws.GetDblookupDataMessage;
-import edu.harvard.i2b2.ai.ws.MessageFactory;
-import edu.harvard.i2b2.ai.ws.SetDblookupDataMessage;
 import edu.harvard.i2b2.common.exception.I2B2Exception;
 
 import org.apache.axiom.om.OMElement;
@@ -59,7 +53,7 @@ public class AIService {
 	 * @return OMElement in i2b2message format
 	 * @throws Exception
 	 */
-	public OMElement getAi(OMElement getResultElement) 
+	public OMElement getQuery(OMElement getResultElement) 
 			throws I2B2Exception {
 
 
@@ -93,7 +87,7 @@ public class AIService {
 		//do Workplace query processing inside thread, so that  
 		// service could send back message with timeout error.     
 		//     ExecutorRunnable er = new ExecutorRunnable();        
-		return execute(new GetAIResultHandler(resultDataMsg), waitTime);
+		return execute(new GetQueryResultHandler(resultDataMsg), waitTime);
 
 	}
 
